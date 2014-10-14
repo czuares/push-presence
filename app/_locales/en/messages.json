@@ -4,7 +4,7 @@
         "description": "The name of the application"
     },
     "appDescription": {
-        "message": "User Presence PushBullet App",
+        "message": "User Presence PushBullet Extension",
         "description": "The description of the application"
     }
 }

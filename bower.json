@@ -1,0 +1,11 @@
+{
+  "name": "push-presence",
+  "version": "0.0.0",
+  "dependencies": {
+    "angular": "~1.2.26",
+    "angular-bootstrap": "~0.11.2",
+    "jquery": "~2.1.1",
+    "bootstrap-css": "~3.2.0"
+  },
+  "devDependencies": {}
+}

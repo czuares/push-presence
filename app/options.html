@@ -1,0 +1,85 @@
+<!doctype html>
+<html ng-app="pushPresenceApp" ng-csp>
+<head>
+  <meta charset="utf-8">
+  <title>PushPresence</title>
+
+  <!-- build:css styles/vendor.css -->
+  <!-- bower:css -->
+  <link rel="stylesheet" href="bower_components/bootstrap-css/css/bootstrap.min.css" />
+  <!-- endbower -->
+  <!-- endbuild -->
+
+  <!-- build:css styles/main.css -->
+  <link rel="stylesheet" href="styles/main.css">
+  <!-- endbuild -->
+</head>
+<body ng-cloak ng-controller="OptionsCtrl">
+  <div>{{ model | json }}</div>
+  <h1>PushPresence</h1>
+  <fieldset>
+    <legend>PushBullet API configuration</legend>
+    <div>Click <a href="https://www.pushbullet.com/account" target="_blank">here</a> to get an access token</div>
+    <input type="text" class="token" placeholder="API Token" ng-change="UpdateToken()" ng-model="model.pushBulletApiToken"/>
+    <alert type="danger" ng-if="model.pushBulletApiToken.length != 32">API Token must be 32 characters</alert>
+
+    <div>
+      <label for="deviceId">Device:</label>
+      <select class="nullable" id="deviceId" ng-disabled="devices.length == 0" ng-change="DeviceSelected()" ng-model="model.deviceId" ng-options="d.iden as d.nickname for d in devices">
+        <option value="">Select a device</option>
+      </select>
+      <button ng-if="model.deviceId" ng-click="TestPush()">Send test push</button>
+    </div>
+  </fieldset>
+
+  <div ng-if="model.pushBulletApiToken && model.deviceId">
+    <fieldset>
+      <legend>Subscribed events</legend>
+      <h4>What types of activity to receive pushes for</h4>
+      <input id="cbActive" type="checkbox" name="events" value="active" ng-model="model.subscribedEvents.active" />
+      <label for="cbActive">Active</label>
+      <br>
+      <input id="cbIdle" type="checkbox" name="events" value="idle" ng-model="model.subscribedEvents.idle" />
+      <label for="cbIdle">Idle</label>
+      <br>
+      <input id="cbLocked" type="checkbox" name="events" value="locked" ng-model="model.subscribedEvents.locked" />
+      <label for="cbLocked">Locked</label>
+    </fieldset>
+
+    <fieldset>
+      <legend>Time frame</legend>
+      <h4>When to receive pushes</h4>
+      <div class="pull-left">
+        <label>From:</label><timepicker ng-model="model.timeFrameStart" isodatestring></timepicker>
+        <label>To:</label><timepicker ng-model="model.timeFrameEnd" isodatestring></timepicker>
+      </div>
+    </fieldset>
+
+    <fieldset>
+      <legend>Storage Type</legend>
+      <input id="rbStorageTypeLocal" type="radio" ng-model="model.storageType" ng-value="StorageType.local">
+      <label for="rbStorageTypeLocal">Local Storage</label>
+      <input id="rbStorageTypeSync" type="radio" ng-model="model.storageType" ng-value="StorageType.sync">
+      <label for="rbStorageTypeSync">Synced Storage</label>
+    </fieldset>
+  </div>
+  <button ng-click="Save()">Save</button>
+</div>
+
+<!-- build:js scripts/vendor.js -->
+<!-- bower:js -->
+<script src="bower_components/jquery/dist/jquery.js"></script>
+<script src="bower_components/angular/angular.js"></script>
+<script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+<script src="bower_components/bootstrap-css/js/bootstrap.min.js"></script>
+<!-- endbower -->
+<!-- endbuild -->
+
+<!-- build:js scripts/options.js -->
+<script src="scripts/pushbullet.js"></script>
+<script src="scripts/datamodel.js"></script>
+<script src="scripts/angular/pushPresenceApp.js"></script>
+<script src="scripts/options.js"></script>
+<!-- endbuild -->
+</body>
+</html>

@@ -1,0 +1,14 @@
+body {
+  padding: 20px;
+}
+
+.token {
+  width: 300px;
+}
+
+.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
+
+.alert {
+  max-width:350px;
+  display:inline-block;
+}

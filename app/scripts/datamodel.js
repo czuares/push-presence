@@ -1,8 +1,17 @@
 'use strict';
 
 var StorageType = { 'local':0, 'sync':1 };
+var EventType = [
+  { id: 'active', name: 'Active' },
+  { id: 'locked', name: 'Locked' },
+  { id: 'idle', name: 'Idle' }
+];
+
+var EventTypes = [ 'active','locked','idle'
+];
 if(Object.freeze){
   Object.freeze(StorageType);
+  Object.freeze(EventType);
 }
 
 function DataModel() {
@@ -11,11 +20,8 @@ function DataModel() {
   this.timeFrameEnd = new Date().toISOString();
   this.storageType = StorageType.local;
   this.deviceId = null;
-  this.subscribedEvents = {
-    active: false,
-    idle: false,
-    locked: false
-  };
+  this.subscribedEvents = { ids :{} };
+  this.events = [];
 }
 
 function EventSubscription() {

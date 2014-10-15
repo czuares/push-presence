@@ -1,11 +1,13 @@
 'use strict';
 
-var pushPresenceApp = angular.module('pushPresenceApp',  ['ui.bootstrap']);
+var pushPresenceApp = angular.module('pushPresenceApp',  ['ui.bootstrap','checklist-model']);
 
 pushPresenceApp.controller('OptionsCtrl', ['$scope','$window',
 function ($scope, $window) {
 
   $scope.StorageType = $window.StorageType;
+  $scope.EventType = $window.EventType;
+  $scope.EventTypes = $window.EventTypes;
   $scope.devices = [];
   $scope.model = new DataModel();
 
@@ -63,6 +65,15 @@ function ($scope, $window) {
     chrome.storage.sync.set($scope.model, function(){
       $scope.saveStatus = 'Saved';
       console.log('Saved');
+      $scope.$apply();
+    });
+  };
+
+  $scope.Clear = function(){
+    chrome.storage.sync.clear(function(){
+      $scope.saveStatus = 'Cleared';
+      console.log('Cleared');
+      $scope.model = new DataModel();
       $scope.$apply();
     });
   };

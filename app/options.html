@@ -36,14 +36,16 @@
     <fieldset>
       <legend>Subscribed events</legend>
       <h4>What types of activity to receive pushes for</h4>
-      <input id="cbActive" type="checkbox" name="events" value="active" ng-model="model.subscribedEvents.active" />
-      <label for="cbActive">Active</label>
-      <br>
-      <input id="cbIdle" type="checkbox" name="events" value="idle" ng-model="model.subscribedEvents.idle" />
-      <label for="cbIdle">Idle</label>
-      <br>
-      <input id="cbLocked" type="checkbox" name="events" value="locked" ng-model="model.subscribedEvents.locked" />
-      <label for="cbLocked">Locked</label>
+
+<!--     <span ng-repeat="e in EventType">
+      <label class="checkbox" for="{{e.id}}">
+        <input type="checkbox" ng-model="model.subscribedEvents.ids[e.id]" name="group" id="{{e.id}}" />
+        {{e.name}}
+      </label>
+    </span> -->
+    <label ng-repeat="e in EventTypes">
+      <input type="checkbox" checklist-model="model.events" checklist-value="e"> {{e}}
+    </label>
     </fieldset>
 
     <fieldset>
@@ -64,6 +66,7 @@
     </fieldset>
   </div>
   <button ng-click="Save()">Save</button>
+  <button ng-click="Clear()">Clear</button>
 </div>
 
 <!-- build:js scripts/vendor.js -->
@@ -72,6 +75,7 @@
 <script src="bower_components/angular/angular.js"></script>
 <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
 <script src="bower_components/bootstrap-css/js/bootstrap.min.js"></script>
+<script src="bower_components/checklist-model/checklist-model.js"></script>
 <!-- endbower -->
 <!-- endbuild -->
 

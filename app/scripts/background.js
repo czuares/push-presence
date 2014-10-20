@@ -10,17 +10,23 @@ chrome.runtime.onInstalled.addListener(function (details) {
 });
 
 chrome.storage.onChanged.addListener(function () {/*changes, areaName*/
+  console.log('data changed - reloading');
   init();
 });
 
 chrome.idle.onStateChanged.addListener(function (newstate) {
+  onEvent(newstate);
+});
+
+var onEvent = function(newstate){
   console.log('State changed to ' + newstate);
 
   var monitored = false;
-  for (var name in model.subscribedEvents) {
+  for (var idx in model.subscribedEvents) {
+    var name = model.subscribedEvents[idx];
     if (name === newstate) {
-      monitored = model.subscribedEvents[name];
-      console.log(name + ' subscribed: ' + monitored);
+      monitored = true;
+      console.log('subscribed: ' + name);
       break;
     }
   }
@@ -41,7 +47,7 @@ chrome.idle.onStateChanged.addListener(function (newstate) {
   lastState = newstate;
 
 
-  if (model.isQuietHours()) {
+  if (isQuietHours(model)) {
     console.log('It\'s quiet hours. Not sending notification');
     return;
   }
@@ -52,7 +58,7 @@ chrome.idle.onStateChanged.addListener(function (newstate) {
   var opt = {
     type: 'basic',
     title: state + msgTitle,
-    message: 'New State: ' + newstate.capitalize(),
+    message: newstate.capitalize(),
     priority: 1,
     iconUrl: '../images/icon-128.png'
   };
@@ -66,7 +72,7 @@ chrome.idle.onStateChanged.addListener(function (newstate) {
     return;
   }
 
-  if (model.isValid()) {
+  if (isValid(model)) {
     console.log('Sending push');
     var res = PushBullet.push('note', model.deviceId, null, {
       title: opt.title,
@@ -74,20 +80,51 @@ chrome.idle.onStateChanged.addListener(function (newstate) {
     });
     console.log(res);
   }
-});
+};
+
+var isValid = function (model) {
+  if ((model.deviceId) && (PushBullet.APIKey)){
+    return true;
+  }
+  return false;
+};
+
+var isQuietHours = function (model) {
+  if (!model.timeFrameStart || !model.timeFrameEnd) {
+    //missing values - not using
+    return false;
+  }
+
+  var startTime = new Date(model.timeFrameStart);
+  var endTime = new Date(model.timeFrameEnd);
+
+  var begin = new Date();
+  begin.setHours(startTime.getHours());
+  begin.setMinutes(startTime.getMinutes());
+  begin.setSeconds(0);
+
+  var end = new Date();
+  end.setHours(endTime.getHours());
+  end.setMinutes(endTime.getMinutes());
+  end.setSeconds(0);
+
+  var now = new Date().getTime();
+
+  if (now >= begin.getTime() && now <= end.getTime()) {
+    console.log('within range');
+    return false;
+  }
+
+  console.log('not within range');
+  return true;
+};
 
 function init() {
-  model.loadFromStorage(function (items) {
+  chrome.storage.sync.get(model, function(items){
     console.log('got items from storage');
     model = items;
     PushBullet.APIKey = items.pushBulletApiToken;
-
-    console.log('Data valid ' + model.isValid());
   });
 }
-
-String.prototype.capitalize = function () {
-  return this.charAt(0).toUpperCase() + this.slice(1);
-};
 
 init();

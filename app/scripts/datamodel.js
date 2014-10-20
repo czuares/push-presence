@@ -1,110 +1,42 @@
 'use strict';
 
-var StorageType = { 'local':0, 'sync':1 };
-var EventType = [
-  { id: 'active', name: 'Active' },
-  { id: 'locked', name: 'Locked' },
-  { id: 'idle', name: 'Idle' }
-];
-
-var EventTypes = [ 'active','locked','idle'
-];
+var StorageTypes = [ 'local', 'sync' ];
+var EventTypes = [ 'active','locked','idle' ];
 if(Object.freeze){
-  Object.freeze(StorageType);
-  Object.freeze(EventType);
+  Object.freeze(StorageTypes);
+  Object.freeze(EventTypes);
 }
 
 function DataModel() {
   this.pushBulletApiToken = '';
-  this.timeFrameStart = new Date().toISOString();
-  this.timeFrameEnd = new Date().toISOString();
-  this.storageType = StorageType.local;
   this.deviceId = null;
-  this.subscribedEvents = { ids :{} };
-  this.events = [];
+  this.devices = [];
+  this.localSubscriptions = [];
+  this.cloudSubscriptions = [];
 }
 
-function EventSubscription() {
-  this.deviceId = '';
+function Subscription(storageType) {
+  this.deviceId = null;
+  this.storageType = storageType;
+  this.timeframes = [new Timeframe()];
   this.events = [];
-  this.timeframes = [];
+  for(var e in EventTypes){
+    this.events.push(new Event(EventTypes[e]));
+  }
 }
 
-function Event() {
-  this.eventType = '';
+function Event(et){
+  this.eventType = et;
   this.subscribed = false;
+  this.customMessage = '';
 }
 
 function Timeframe() {
-  this.timeFrameStart = new Date().toISOString();
-  this.timeFrameEnd = new Date().toISOString();
+  this.begin = new Date().toISOString();
+  this.end = new Date().toISOString();
+  this.invert = false;
 }
 
-//TODO: add per device subscribed events
-//TODO: add multiple time frames
-//TODO: wire up local/synced storage
-
-DataModel.prototype.loadFromStorage = function (callback) {
-  console.log('loading from storage');
-  chrome.storage.sync.get(this, callback);
-};
-
-DataModel.prototype.persistToStorage = function (callback) {
-  console.log('persisting to storage');
-  chrome.storage.sync.set(this, callback);
-};
-
-DataModel.prototype.isValid = function () {
-  if ((this.deviceId) && (PushBullet.APIKey)){
-    return true;
-  }
-  return false;
-};
-
-function parseTime(s) {
-  var part = s.match(/(\d+):(\d+)(?: )?(am|pm)?/i);
-  var hh = parseInt(part[1], 10);
-  var mm = parseInt(part[2], 10);
-  var ap = part[3] ? part[3].toUpperCase() : null;
-  if (ap === 'AM') {
-    if (hh === 12) {
-      hh = 0;
-    }
-  }
-  if (ap === 'PM') {
-    if (hh !== 12) {
-      hh += 12;
-    }
-  }
-  return {
-    hh: hh,
-    mm: mm
-  };
-}
-
-DataModel.prototype.isQuietHours = function () {
-  if (!this.timeFrameStart || !this.timeFrameEnd) {
-    //missing values - not using
-    return false;
-  }
-  var ts = parseTime(this.timeFrameStart);
-  var te = parseTime(this.timeFrameEnd);
-
-  var begin = new Date();
-  begin.setHours(ts.hh);
-  begin.setMinutes(ts.mm);
-
-  var end = new Date();
-  end.setHours(te.hh);
-  end.setMinutes(te.mm);
-
-  var now = new Date().getTime();
-
-  if (now >= begin.getTime() && now <= end.getTime()) {
-    console.log('within range');
-    return false;
-  }
-
-  console.log('not within range');
-  return true;
+String.prototype.capitalize = function () {
+  return this.charAt(0).toUpperCase() + this.slice(1);
 };

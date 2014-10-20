@@ -1,0 +1,37 @@
+<div>
+  <!-- {{model | json}} -->
+  <div>
+    <h4>{{ ($parent.model.devices | filter:{iden: model.deviceId})[0]["nickname"] }}</h4>
+    <button ng-if="model.deviceId" ng-click="$parent.TestPush()" class="btn btn-default">Send test push</button>
+  </div>
+
+  <fieldset>
+    <legend>Subscribed events</legend>
+    <h4>What types of activity to receive pushes for:</h4>
+    <div ng-repeat="e in model.events" ng-init="title=(e.eventType | capitalize)">
+<!--     {{e | json }} -->
+      <label class="checkbox">
+        <input type="checkbox" ng-model="e.subscribed" />{{title}}
+      </label>
+      <label>Message:
+      <input type="text" ng-disabled="!e.subscribed" placeholder="{{title}}" ng-model="e.customMessage" />
+      </label>
+    </div>
+    <!-- <span ng-repeat="e in $parent.EventTypes">
+      <label class="checkbox">
+        <input type="checkbox" checklist-model="model.events" checklist-value="e" /> {{e | capitalize }}
+      </label>
+    </span> -->
+  </fieldset>
+
+  <fieldset>
+    <legend>Time frame</legend>
+    <h4>When to receive pushes:</h4>
+    <div ng-repeat="t in model.timeframes">
+      <label class="checkbox"><input type="checkbox" ng-model="t.invert"/>Invert</label>
+      <label>From:<timepicker ng-model="t.begin" isodatestring></timepicker></label>
+      <label>To:<timepicker ng-model="t.end" isodatestring></timepicker></label>
+    </div>
+    <button class="btn btn-default" ng-click="AddTimeframe()">Add Timeframe</button>
+  </fieldset>
+</div>

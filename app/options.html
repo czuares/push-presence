@@ -20,53 +20,35 @@
   <fieldset>
     <legend>PushBullet API configuration</legend>
     <div>Click <a href="https://www.pushbullet.com/account" target="_blank">here</a> to get an access token</div>
-    <input type="text" class="token" placeholder="API Token" ng-change="UpdateToken()" ng-model="model.pushBulletApiToken"/>
-    <alert type="danger" ng-if="model.pushBulletApiToken.length != 32">API Token must be 32 characters</alert>
+    <input type="text" class="token form-control" placeholder="API Token" ng-change="SetToken()" ng-model="model.pushBulletApiToken"/><button class="btn btn-default" ng-click="RefreshDevices()">Refresh Devices</button>
+    <span class="alert alert-danger" ng-if="model.pushBulletApiToken.length != 32">API Token must be 32 characters</span>
 
     <div>
-      <label for="deviceId">Device:</label>
-      <select class="nullable" id="deviceId" ng-disabled="devices.length == 0" ng-change="DeviceSelected()" ng-model="model.deviceId" ng-options="d.iden as d.nickname for d in devices">
-        <option value="">Select a device</option>
-      </select>
-      <button ng-if="model.deviceId" ng-click="TestPush()">Send test push</button>
+      <label>Device:
+        <select class="pull-left nullable form-control" ng-disabled="model.devices.length == 0" ng-change="DeviceSelected()" ng-model="model.deviceId" ng-options="d.iden as d.nickname for d in model.devices"><!--  | filter:{active:true} -->
+          <option value="">Select a device</option>
+        </select>
+      </label>
     </div>
   </fieldset>
 
-  <div ng-if="model.pushBulletApiToken && model.deviceId">
-    <fieldset>
-      <legend>Subscribed events</legend>
-      <h4>What types of activity to receive pushes for</h4>
-
-<!--     <span ng-repeat="e in EventType">
-      <label class="checkbox" for="{{e.id}}">
-        <input type="checkbox" ng-model="model.subscribedEvents.ids[e.id]" name="group" id="{{e.id}}" />
-        {{e.name}}
-      </label>
-    </span> -->
-    <label ng-repeat="e in EventTypes">
-      <input type="checkbox" checklist-model="model.events" checklist-value="e"> {{e}}
-    </label>
-    </fieldset>
-
-    <fieldset>
-      <legend>Time frame</legend>
-      <h4>When to receive pushes</h4>
-      <div class="pull-left">
-        <label>From:</label><timepicker ng-model="model.timeFrameStart" isodatestring></timepicker>
-        <label>To:</label><timepicker ng-model="model.timeFrameEnd" isodatestring></timepicker>
-      </div>
-    </fieldset>
-
-    <fieldset>
-      <legend>Storage Type</legend>
-      <input id="rbStorageTypeLocal" type="radio" ng-model="model.storageType" ng-value="StorageType.local">
-      <label for="rbStorageTypeLocal">Local Storage</label>
-      <input id="rbStorageTypeSync" type="radio" ng-model="model.storageType" ng-value="StorageType.sync">
-      <label for="rbStorageTypeSync">Synced Storage</label>
-    </fieldset>
+  <div ng-repeat="s in model.localSubscriptions">
+    <!-- TODO: add Remove button/capability -->
+    <app-subscription data="s"></app-subscription>
   </div>
-  <button ng-click="Save()">Save</button>
-  <button ng-click="Clear()">Clear</button>
+  <div ng-repeat="s in model.cloudSubscriptions">
+    <app-subscription data="s"></app-subscription>
+  </div>
+  <br><br>
+  <div class="btn-group" ng-repeat="s in StorageTypes">
+    <button class="btn btn-default" ng-click="AddSubscription($index)">Add {{ s | capitalize }} Event Subscription</button>
+  </div>
+  <br><br>
+  <div class="btn-group">
+    <button class="btn btn-default" ng-click="Save()">Save</button>
+    <button class="btn btn-secondary" ng-click="Clear()">Clear</button>
+  </div>
+  <span ng-bind="saveStatus"></span>
 </div>
 
 <!-- build:js scripts/vendor.js -->
@@ -76,6 +58,7 @@
 <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
 <script src="bower_components/bootstrap-css/js/bootstrap.min.js"></script>
 <script src="bower_components/checklist-model/checklist-model.js"></script>
+<script src="bower_components/underscore/underscore.js"></script>
 <!-- endbower -->
 <!-- endbuild -->
 

@@ -11,8 +11,7 @@ function DataModel() {
   this.pushBulletApiToken = '';
   this.deviceId = null;
   this.devices = [];
-  this.localSubscriptions = [];
-  this.cloudSubscriptions = [];
+  this.subscriptions = [];
 }
 
 function Subscription(storageType) {

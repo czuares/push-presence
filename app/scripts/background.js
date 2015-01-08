@@ -9,8 +9,8 @@ chrome.runtime.onInstalled.addListener(function (details) {
   console.log('previousVersion', details.previousVersion);
 });
 
-chrome.storage.onChanged.addListener(function () {/*changes, areaName*/
-  console.log('data changed - reloading');
+chrome.storage.onChanged.addListener(function (changes, areaName) {
+  console.log(areaName + ' data changed - reloading');
   init();
 });
 
@@ -21,44 +21,50 @@ chrome.idle.onStateChanged.addListener(function (newstate) {
 var onEvent = function(newstate){
   console.log('State changed to ' + newstate);
 
-  var monitored = false;
-  for (var idx in model.subscribedEvents) {
-    var name = model.subscribedEvents[idx];
-    if (name === newstate) {
-      monitored = true;
-      console.log('subscribed: ' + name);
-      break;
-    }
-  }
-
   if (lastState === null) {
     lastState = newstate;
   } else if (lastState === newstate) {
-    console.log('State hasn\'t changed. Still ' + newstate);
+    console.log('State has not changed. Still ' + newstate);
     return;
   }
 
-  if (!monitored) {
-    console.log('Event ' + newstate + ' is not subscribed. Not sending notification');
-    return;
-  }
-
-  //only update if monitored to avoid state changes when not wanted
+  //todo: where should this happen
   lastState = newstate;
 
+  model.subscriptions.forEach(function(sub){
+    var inRange = sub.timeframes.some(function(timeframe){
+      return isWithinRange(timeframe);
+    });
 
-  if (isQuietHours(model)) {
-    console.log('It\'s quiet hours. Not sending notification');
-    return;
-  }
+    if(!inRange){
+      console.log('Not within any range - Not sending notification');
+      return;
+    }
 
+    sub.events.forEach(function(evt){
+      if(!evt.subscribed){
+          console.log(evt.eventType + ' not subscribed');
+          return;
+        }
+        
+        if (evt.eventType === newstate) {
+          console.log('subscribed: ' + evt.eventType);
+          handleEvent(sub, evt);
+        } else{
+          console.log(evt.eventType + ' subscribed but not current state');
+        }
+      });
+  });
+};
+
+var handleEvent = function (subscription, evt){
   var msgTitle = 'PushPresence update';
   var state = navigator.onLine ? '' : '[Offline] ';
 
   var opt = {
     type: 'basic',
     title: state + msgTitle,
-    message: newstate.capitalize(),
+    message: evt.eventType.capitalize(),
     priority: 1,
     iconUrl: '../images/icon-128.png'
   };
@@ -72,52 +78,50 @@ var onEvent = function(newstate){
     return;
   }
 
-  if (isValid(model)) {
+  if (isReady(subscription)) {
     console.log('Sending push');
-    var res = PushBullet.push('note', model.deviceId, null, {
+    var res = PushBullet.push('note', subscription.deviceId, null, {
       title: opt.title,
-      body: opt.message
+      body: (!!evt.customMessage) ? evt.customMessage : opt.message 
     });
     console.log(res);
   }
+}
+
+var isReady = function (subscription) {
+  return (subscription.deviceId) && (PushBullet.APIKey);
 };
 
-var isValid = function (model) {
-  if ((model.deviceId) && (PushBullet.APIKey)){
-    return true;
-  }
-  return false;
-};
-
-var isQuietHours = function (model) {
-  if (!model.timeFrameStart || !model.timeFrameEnd) {
-    //missing values - not using
+var isWithinRange = function (timeframe){
+   if (!timeframe.begin || !timeframe.end) {
+    //missing values - invalid
     return false;
   }
 
-  var startTime = new Date(model.timeFrameStart);
-  var endTime = new Date(model.timeFrameEnd);
+  var startTime = new Date(timeframe.begin);
+  var endTime = new Date(timeframe.end);
 
-  var begin = new Date();
-  begin.setHours(startTime.getHours());
-  begin.setMinutes(startTime.getMinutes());
-  begin.setSeconds(0);
+  var beginDate = new Date();
+  beginDate.setHours(startTime.getHours());
+  beginDate.setMinutes(startTime.getMinutes());
+  beginDate.setSeconds(0);
 
-  var end = new Date();
-  end.setHours(endTime.getHours());
-  end.setMinutes(endTime.getMinutes());
-  end.setSeconds(0);
+  var endDate = new Date();
+  endDate.setHours(endTime.getHours());
+  endDate.setMinutes(endTime.getMinutes());
+  endDate.setSeconds(0);
 
   var now = new Date().getTime();
 
-  if (now >= begin.getTime() && now <= end.getTime()) {
-    console.log('within range');
-    return false;
-  }
+  var withinRange = (now >= beginDate.getTime() && now <= endDate.getTime());
+  console.log('within range: ' + withinRange + ' range: ' + beginDate + ' to ' + endDate);
 
-  console.log('not within range');
-  return true;
-};
+  if(timeframe.invert){
+    console.log('inverted state: ' + !withinRange);
+    return !withinRange;
+  }
+  return withinRange;
+}
 
 function init() {
   chrome.storage.sync.get(model, function(items){

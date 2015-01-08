@@ -139,7 +139,7 @@ module.exports = function (grunt) {
       all: {
         options: {
           run: true,
-          urls: ['http://localhost:<%= connect.options.port %>/index.html']
+          urls: ['http://localhost:<%= connect.options.port %>/options.html']
         }
       }
     },
@@ -160,7 +160,7 @@ module.exports = function (grunt) {
         dest: '<%= config.dist %>'
       },
       html: [
-        '<%= config.app %>/index.html'
+        '<%= config.app %>/options.html'
       ]
     },
 
@@ -218,7 +218,7 @@ module.exports = function (grunt) {
       }
     },
 
-    // By default, your `index.html`'s <!-- Usemin block --> will take care of
+    // By default, your `options.html`'s <!-- Usemin block --> will take care of
     // minification. These next options are pre-configured if you do not wish
     // to use the Usemin blocks.
     cssmin: {

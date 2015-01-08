@@ -1,6 +1,6 @@
 'use strict';
 
-var pushPresenceApp = angular.module('pushPresenceApp',  ['ui.bootstrap','checklist-model']);
+var pushPresenceApp = angular.module('pushPresenceApp',  ['ui.bootstrap']);
 
 pushPresenceApp.controller('OptionsCtrl', ['$scope','$window',
   function ($scope, $window) {
@@ -87,20 +87,10 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope','$window',
     };
 
     $scope.AddSubscription = function(storageTypeIndex){
-
       var storageType = $scope.StorageTypes[storageTypeIndex];
       var sub = new Subscription(storageType);
       sub.deviceId = $scope.model.deviceId;
-      switch(storageType){
-        case 'local':
-        $scope.model.localSubscriptions.push(sub);
-        break;
-        case 'sync':
-        $scope.model.cloudSubscriptions.push(sub);
-        break;
-        default:
-        break;
-      }
+      $scope.model.subscriptions.push(sub);
     };
   }]);
 
@@ -125,9 +115,13 @@ pushPresenceApp.directive('appSubscription',  function() {
       model: "=data"
     },
     link: function($scope, element, attrs) {
-     $scope.AddTimeframe = function(a) {
-      $scope.model.timeframes.push(new Timeframe());
-    }
+      $scope.AddTimeframe = function(a) {
+        $scope.model.timeframes.push(new Timeframe());
+      }
+      $scope.RemoveTimeFrame = function(idx) {
+        console.log('index: ' + idx);
+        $scope.model.timeframes.splice(idx, 1);
+      }
   },
   templateUrl: '../templates/subscription.html'
 };

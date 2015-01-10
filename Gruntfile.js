@@ -152,6 +152,13 @@ module.exports = function (grunt) {
       }
     },
 
+    // Remove logging from all .js files
+    removelogging: {
+      dist: {
+        src: '<%= config.dist %>/**/*.js'
+      }
+    },
+
     // Reads HTML for usemin blocks to enable smart builds that automatically
     // concat, minify and revision files. Creates configurations in memory so
     // additional tasks can operate on them
@@ -259,6 +266,14 @@ module.exports = function (grunt) {
             'styles/fonts/{,*/}*.*',
             '_locales/{,*/}*.json',
           ]
+        },
+        //https://stackoverflow.com/questions/21932451/assets-missing-in-angular-application-built-using-grunt
+        {
+          expand: true,
+          flatten: true,
+          cwd: '<%= config.app %>',
+          dest: '<%= config.dist %>/fonts',
+          src: ['bower_components/bootstrap/fonts/*.*']
         }]
       },
       styles: {
@@ -361,6 +376,7 @@ module.exports = function (grunt) {
     'cssmin',
     'uglify',
     'copy',
+    //'removelogging',
     'usemin',
     'htmlmin',
     'compress'

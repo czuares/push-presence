@@ -3,6 +3,8 @@
 console.log('Events');
 
 var model = new DataModel();
+var config = new ConfigurationModel();
+
 var lastState = null;
 
 chrome.runtime.onInstalled.addListener(function (details) {
@@ -28,7 +30,6 @@ var onEvent = function(newstate){
     return;
   }
 
-  //todo: where should this happen
   lastState = newstate;
 
   model.subscriptions.forEach(function(sub){
@@ -98,8 +99,21 @@ var isWithinRange = function (timeframe){
     return false;
   }
 
+  var dayId = new Date().getDay();
+  var isTodayEnabled = timeframe.days.some(function(d){
+    var enabled = (d.id == dayId && d.enabled);
+    console.log('enabled ' + d.id + ': ' + enabled);
+    return enabled;
+  });
+
+  if(!isTodayEnabled){
+    console.log('Not enabled for today - skipping');
+    return;
+  }
+
   var startTime = new Date(timeframe.begin);
   var endTime = new Date(timeframe.end);
+  var now = new Date().getTime();
 
   var beginDate = new Date();
   beginDate.setHours(startTime.getHours());
@@ -110,8 +124,6 @@ var isWithinRange = function (timeframe){
   endDate.setHours(endTime.getHours());
   endDate.setMinutes(endTime.getMinutes());
   endDate.setSeconds(0);
-
-  var now = new Date().getTime();
 
   var withinRange = (now >= beginDate.getTime() && now <= endDate.getTime());
   console.log('within range: ' + withinRange + ' range: ' + beginDate + ' to ' + endDate);
@@ -124,10 +136,14 @@ var isWithinRange = function (timeframe){
 }
 
 function init() {
-  chrome.storage.sync.get(model, function(items){
-    console.log('got items from storage');
-    model = items;
+  chrome.storage.sync.get(config, function(items){
+    console.log('got synced config from storage');
     PushBullet.APIKey = items.pushBulletApiToken;
+  });
+
+  chrome.storage.local.get(model, function(items){
+    console.log('got local data from storage');
+    model = items;
   });
 }
 

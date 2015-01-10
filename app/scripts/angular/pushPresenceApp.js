@@ -2,16 +2,26 @@
 
 var pushPresenceApp = angular.module('pushPresenceApp',  ['ui.bootstrap']);
 
-pushPresenceApp.controller('OptionsCtrl', ['$scope','$window',
+pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
   function ($scope, $window) {
 
-    $scope.StorageTypes = $window.StorageTypes;
+    $scope.deviceId = null;
+    $scope.online = navigator.onLine;
     $scope.EventTypes = $window.EventTypes;
+    $scope.DaysOfWeek = $window.DaysOfWeek;
 
     $scope.model = new DataModel();
+    $scope.config = new ConfigurationModel();
+
+    var onlineStateChanged = function(online){
+      $scope.$apply(function() {
+        console.log((online ? 'on' : 'off' ) + 'line at ' + new Date());
+        $scope.online = online;
+      });
+    }
 
     var loadApiKey = function(){
-      PushBullet.APIKey = $scope.model.pushBulletApiToken;
+      PushBullet.APIKey = $scope.config.pushBulletApiToken;
       console.log('api key set');
     };
 
@@ -24,7 +34,7 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope','$window',
         }
 
         console.log(res.devices);
-        $scope.model.devices = _.chain(res.devices)
+        $scope.config.devices = _.chain(res.devices)
         .where({active:true}).map(function(data){
           return _.pick(data,['iden','nickname']);
         }).value();
@@ -33,13 +43,42 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope','$window',
       });
     };
 
-    chrome.storage.sync.get($scope.model, function(items){
-      console.log('Binding model from storage');
-      $scope.model = items;
+    var resetModel = function(){
+      console.log('Resetting model');
+      $scope.model = new DataModel();
+    };
+
+    var resetConfig = function(){
+      chrome.storage.sync.clear(function(){
+        console.log('Cleared synced');
+        $scope.config = new ConfigurationModel();
+        $scope.$apply();
+      });
+    }
+
+    $window.addEventListener("offline", function () {
+      onlineStateChanged(false);
+    }, false);
+    $window.addEventListener("online", function () {
+      onlineStateChanged(true);
+    }, false);
+
+    chrome.storage.sync.get($scope.config, function(items){
+      console.log('Binding config from synced storage');
+      $scope.config = items;
       loadApiKey();
 
       $scope.$apply();
     });
+    chrome.storage.local.get($scope.model, function(items){
+      console.log('Binding data model from local storage');
+      $scope.model = items;
+      $scope.$apply();
+    });
+
+    $scope.ApiKeySet = function(){
+      return $scope.config.pushBulletApiToken.length == 32;
+    };
 
     $scope.SetToken = function(){
       loadApiKey();
@@ -47,37 +86,33 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope','$window',
       if(PushBullet.APIKey.length == 32){
         getDevices();
       } else if (PushBullet.APIKey == ''){
-        console.log('Resetting model');
-        $scope.model = new DataModel();
+        resetConfig();
+        resetModel();
       }
     }
 
     $scope.DeviceSelected = function(){
-      console.log('Selected device ' + $scope.model.deviceId);
-    };
-
-    $scope.TestPush = function(){
-      var res = PushBullet.push('note',
-        $scope.model.deviceId, null, {
-          title : 'Test from PushPresence',
-          body : 'Test Notification'
-        });
-      console.log(res);
+      console.log('Selected device ' + $scope.deviceId);
     };
 
     $scope.Save = function(){
-      chrome.storage.sync.set($scope.model, function(){
+      chrome.storage.sync.set($scope.config, function(){
         $scope.saveStatus = 'Saved';
-        console.log('Saved');
+        console.log('Saved config');
+        $scope.$apply();
+      });
+      chrome.storage.local.set($scope.model, function(){
+        $scope.saveStatus = 'Saved';
+        console.log('Saved data model');
         $scope.$apply();
       });
     };
 
-    $scope.Clear = function(){
-      chrome.storage.sync.clear(function(){
+    $scope.Reset = function(){
+      chrome.storage.local.clear(function(){
         $scope.saveStatus = 'Cleared';
-        console.log('Cleared');
-        $scope.model = new DataModel();
+        console.log('Reset local');
+        resetModel();
         $scope.$apply();
       });
     };
@@ -86,10 +121,9 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope','$window',
       getDevices();
     };
 
-    $scope.AddSubscription = function(storageTypeIndex){
-      var storageType = $scope.StorageTypes[storageTypeIndex];
-      var sub = new Subscription(storageType);
-      sub.deviceId = $scope.model.deviceId;
+    $scope.AddSubscription = function(){
+      var sub = new Subscription();
+      sub.deviceId = $scope.deviceId;
       $scope.model.subscriptions.push(sub);
     };
   }]);
@@ -114,17 +148,31 @@ pushPresenceApp.directive('appSubscription',  function() {
     scope:{
       model: "=data"
     },
-    link: function($scope, element, attrs) {
+    link: function($scope, $parent, element, attrs) {
       $scope.AddTimeframe = function(a) {
         $scope.model.timeframes.push(new Timeframe());
-      }
+      };
+
       $scope.RemoveTimeFrame = function(idx) {
         console.log('index: ' + idx);
         $scope.model.timeframes.splice(idx, 1);
-      }
-  },
-  templateUrl: '../templates/subscription.html'
-};
+      };
+
+      $scope.TestPush = function(){
+        var res = PushBullet.push('note',
+          $scope.model.deviceId, null, {
+            title : 'Test from PushPresence',
+            body : 'Test Notification'
+          });
+        console.log(res);
+      };
+
+      $scope.DayName = function(day){
+        return $scope.$parent.DaysOfWeek[day.id];
+      };
+    },
+    templateUrl: '../templates/subscription.html'
+  };
 });
 
 pushPresenceApp.filter('capitalize', function() {

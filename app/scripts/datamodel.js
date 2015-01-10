@@ -1,22 +1,25 @@
 'use strict';
 
-var StorageTypes = [ 'local', 'sync' ];
 var EventTypes = [ 'active','locked','idle' ];
+var DaysOfWeek = {  0: 'Sun', 1: 'Mon', 2: 'Tues', 
+3: 'Weds', 4: 'Thurs', 5: 'Fri', 6: 'Sat' };
+
 if(Object.freeze){
-  Object.freeze(StorageTypes);
   Object.freeze(EventTypes);
+  Object.freeze(DaysOfWeek);
 }
 
-function DataModel() {
+function ConfigurationModel() {
   this.pushBulletApiToken = '';
-  this.deviceId = null;
   this.devices = [];
+}
+
+function DataModel(){
   this.subscriptions = [];
 }
 
-function Subscription(storageType) {
+function Subscription() {
   this.deviceId = null;
-  this.storageType = storageType;
   this.timeframes = [new Timeframe()];
   this.events = [];
   for(var e in EventTypes){
@@ -30,10 +33,19 @@ function Event(et){
   this.customMessage = '';
 }
 
+function Day(dayIndex){
+  this.id = dayIndex;
+  this.enabled = false;
+}
+
 function Timeframe() {
   this.begin = new Date().toISOString();
   this.end = new Date().toISOString();
   this.invert = false;
+  this.days = [];
+  for(var d in DaysOfWeek){
+    this.days.push(new Day(d));
+  }
 }
 
 String.prototype.capitalize = function () {

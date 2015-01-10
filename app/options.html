@@ -6,7 +6,7 @@
 
   <!-- build:css styles/vendor.css -->
   <!-- bower:css -->
-  <link rel="stylesheet" href="bower_components/bootstrap-css/css/bootstrap.min.css" />
+  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
   <!-- endbower -->
   <!-- endbuild -->
 
@@ -15,36 +15,37 @@
   <!-- endbuild -->
 </head>
 <body ng-cloak ng-controller="OptionsCtrl">
+  <div>{{ config | json }}
   <div>{{ model | json }}</div>
   <h1>PushPresence</h1>
   <fieldset>
     <legend>PushBullet API configuration</legend>
     <div>Click <a href="https://www.pushbullet.com/account" target="_blank">here</a> to get an access token</div>
-    <input type="text" class="token form-control" placeholder="API Token" ng-change="SetToken()" ng-model="model.pushBulletApiToken"/><button class="btn btn-default" ng-click="RefreshDevices()">Refresh Devices</button>
-    <span class="alert alert-danger" ng-if="model.pushBulletApiToken.length != 32">API Token must be 32 characters</span>
+    <div ng-class="{'has-error' : !(ApiKeySet()) }">
+    <input type="text" class="token form-control" placeholder="API Token" ng-change="SetToken()" ng-model="config.pushBulletApiToken"/><button class="btn btn-default" ng-disabled="!online || !config.pushBulletApiToken" ng-click="RefreshDevices()">Refresh Devices</button>
+    <span class="alert alert-danger" ng-if="!(ApiKeySet())">API Token must be 32 characters</span>
+    </div>
 
     <div>
       <label>Device:
-        <select class="pull-left nullable form-control" ng-disabled="model.devices.length == 0" ng-change="DeviceSelected()" ng-model="model.deviceId" ng-options="d.iden as d.nickname for d in model.devices">
+        <select class="pull-left nullable form-control" ng-disabled="config.devices.length == 0" ng-change="DeviceSelected()" ng-model="deviceId" ng-options="d.iden as d.nickname for d in config.devices">
           <option value="">Select a device</option>
         </select>
       </label>
     </div>
-    <div class="btn-group" ng-repeat="s in StorageTypes">
-    <button class="btn btn-default" ng-disabled="model.deviceId == null" ng-click="AddSubscription($index)">Add {{ s | capitalize }} Event Subscription</button>
-    </div>
+    <button class="btn btn-default" ng-disabled="deviceId == null" ng-click="AddSubscription()">Add Event Subscription</button>
   </fieldset>
 
-  <div ng-repeat="st in StorageTypes">
-    <h2>{{ st | capitalize }} Subscriptions</h2>
-    <div ng-repeat="s in model.subscriptions | filter:{storageType:st}">
+  <div>
+    <h2>Subscriptions</h2>
+    <div ng-repeat="s in model.subscriptions">
       <app-subscription data="s"></app-subscription>
     </div>
   </div>
   <br><br>
   <div class="btn-group">
     <button class="btn btn-default" ng-click="Save()">Save</button>
-    <button class="btn btn-secondary" ng-click="Clear()">Clear</button>
+    <button class="btn btn-secondary" ng-click="Reset()">Reset</button>
   </div>
   <span ng-bind="saveStatus"></span>
 </div>
@@ -52,10 +53,10 @@
 <!-- build:js scripts/vendor.js -->
 <!-- bower:js -->
 <script src="bower_components/jquery/dist/jquery.js"></script>
+<script src="bower_components/underscore/underscore.js"></script>
+<script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
 <script src="bower_components/angular/angular.js"></script>
 <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
-<script src="bower_components/bootstrap-css/js/bootstrap.min.js"></script>
-<script src="bower_components/underscore/underscore.js"></script>
 <!-- endbower -->
 <!-- endbuild -->
 

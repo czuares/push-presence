@@ -7,7 +7,6 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
 
     $scope.deviceId = null;
     $scope.online = navigator.onLine;
-    $scope.EventTypes = $window.EventTypes;
     $scope.DaysOfWeek = $window.DaysOfWeek;
 
     $scope.model = new DataModel();
@@ -35,22 +34,25 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
 
         console.log(res.devices);
         $scope.config.devices = _.chain(res.devices)
-        .where({active:true}).map(function(data){
-          return _.pick(data,['iden','nickname']);
-        }).value();
+          .where({active:true}).map(function(data){
+            return _.pick(data,['iden','nickname']);
+          }).value();
 
         $scope.$apply();
       });
     };
 
     var resetModel = function(){
-      console.log('Resetting model');
-      $scope.model = new DataModel();
+      chrome.storage.local.clear(function(){
+        console.log('Reset local');
+        $scope.model = new DataModel();
+        $scope.$apply();
+      });
     };
 
     var resetConfig = function(){
       chrome.storage.sync.clear(function(){
-        console.log('Cleared synced');
+        console.log('Reset synced');
         $scope.config = new ConfigurationModel();
         $scope.$apply();
       });
@@ -91,6 +93,12 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
       }
     }
 
+    $scope.GetDeviceName = function(deviceId){
+      var name = _.findWhere($scope.config.devices, 
+        {iden : deviceId }).nickname;
+      return (!!name) ? name : deviceId;
+    }
+
     $scope.DeviceSelected = function(){
       console.log('Selected device ' + $scope.deviceId);
     };
@@ -101,6 +109,7 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
         console.log('Saved config');
         $scope.$apply();
       });
+
       chrome.storage.local.set($scope.model, function(){
         $scope.saveStatus = 'Saved';
         console.log('Saved data model');
@@ -109,15 +118,11 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
     };
 
     $scope.Reset = function(){
-      chrome.storage.local.clear(function(){
-        $scope.saveStatus = 'Cleared';
-        console.log('Reset local');
-        resetModel();
-        $scope.$apply();
-      });
+      resetModel();
     };
 
     $scope.RefreshDevices= function(){
+      $scope.deviceId = null;
       getDevices();
     };
 
@@ -126,6 +131,16 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
       sub.deviceId = $scope.deviceId;
       $scope.model.subscriptions.push(sub);
     };
+
+    $scope.TestPush = function(){
+      var res = PushBullet.push('note',
+        $scope.deviceId, null, {
+          title : 'Test from PushPresence',
+          body : 'Test Notification'
+        });
+      console.log(res);
+    };
+
   }]);
 
 pushPresenceApp.directive('isodatestring', function() {
@@ -156,15 +171,6 @@ pushPresenceApp.directive('appSubscription',  function() {
       $scope.RemoveTimeFrame = function(idx) {
         console.log('index: ' + idx);
         $scope.model.timeframes.splice(idx, 1);
-      };
-
-      $scope.TestPush = function(){
-        var res = PushBullet.push('note',
-          $scope.model.deviceId, null, {
-            title : 'Test from PushPresence',
-            body : 'Test Notification'
-          });
-        console.log(res);
       };
 
       $scope.DayName = function(day){

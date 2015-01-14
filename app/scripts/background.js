@@ -33,7 +33,7 @@ var onEvent = function(newstate){
   lastState = newstate;
 
   model.subscriptions.forEach(function(sub){
-    var inRange = sub.timeframes.some(function(timeframe){
+    var inRange = sub.timeframes.some(function(timeframe) {
       return isWithinRange(timeframe);
     });
 
@@ -44,17 +44,17 @@ var onEvent = function(newstate){
 
     sub.events.forEach(function(evt){
       if(!evt.subscribed){
-          console.log(evt.eventType + ' not subscribed');
-          return;
-        }
-        
-        if (evt.eventType === newstate) {
-          console.log('subscribed: ' + evt.eventType);
-          handleEvent(sub, evt);
-        } else{
-          console.log(evt.eventType + ' subscribed but not current state');
-        }
-      });
+        console.log(evt.eventType + ' not subscribed');
+        return;
+      }
+      
+      if (evt.eventType === newstate) {
+        console.log('subscribed: ' + evt.eventType);
+        handleEvent(sub, evt);
+      } else{
+        console.log(evt.eventType + ' subscribed but not current state');
+      }
+    });
   });
 };
 
@@ -94,7 +94,7 @@ var isReady = function (subscription) {
 };
 
 var isWithinRange = function (timeframe){
-   if (!timeframe.begin || !timeframe.end) {
+ if (!timeframe.begin || !timeframe.end) {
     //missing values - invalid
     return false;
   }

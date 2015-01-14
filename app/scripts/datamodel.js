@@ -12,6 +12,7 @@ if(Object.freeze){
 function ConfigurationModel() {
   this.pushBulletApiToken = '';
   this.devices = [];
+  this.expanded = true;
 }
 
 function DataModel(){

@@ -15,39 +15,56 @@
   <!-- endbuild -->
 </head>
 <body ng-cloak ng-controller="OptionsCtrl">
-  <div>{{ config | json }}
-  <div>{{ model | json }}</div>
-  <h1>PushPresence</h1>
-  <fieldset>
-    <legend>PushBullet API configuration</legend>
-    <div>Click <a href="https://www.pushbullet.com/account" target="_blank">here</a> to get an access token</div>
-    <div ng-class="{'has-error' : !(ApiKeySet()) }">
-    <input type="text" class="token form-control" placeholder="API Token" ng-change="SetToken()" ng-model="config.pushBulletApiToken"/><button class="btn btn-default" ng-disabled="!online || !config.pushBulletApiToken" ng-click="RefreshDevices()">Refresh Devices</button>
-    <span class="alert alert-danger" ng-if="!(ApiKeySet())">API Token must be 32 characters</span>
-    </div>
-
-    <div>
-      <label>Device:
-        <select class="pull-left nullable form-control" ng-disabled="config.devices.length == 0" ng-change="DeviceSelected()" ng-model="deviceId" ng-options="d.iden as d.nickname for d in config.devices">
+  <!-- <div>{{ config | json }}</div>
+  <div>{{ model | json }}</div> -->
+  <div class="page-header"><h1>PushPresence
+    <small>PushBullet User Presence Extension</small></h1>
+  </div>
+  <div class="container">
+    <h3>Devices</h3>
+    <div class="row">
+      <div class="col-md-3">
+        <select class="nullable form-control" ng-disabled="config.devices.length == 0" ng-change="DeviceSelected()" ng-model="deviceId" ng-options="d.iden as d.nickname for d in config.devices">
           <option value="">Select a device</option>
         </select>
-      </label>
-    </div>
-    <button class="btn btn-default" ng-disabled="deviceId == null" ng-click="AddSubscription()">Add Event Subscription</button>
-  </fieldset>
+      </div>  
+      <div class="col-md-5 btn-group">
+        <button class="btn btn-primary" ng-disabled="deviceId == null" ng-click="AddSubscription()">Add Event Subscription</button>
+        <button class="btn btn-info" ng-disabled="!deviceId" ng-click="TestPush()">Send test push</button>
+        <button class="btn btn-default" ng-disabled="!online || !ApiKeySet()" ng-click="RefreshDevices()">Refresh Devices</button>
+      </div>  
+      <div class="col-md-4">
+        <accordion>
+          <accordion-group is-open="config.expanded">
+          <accordion-heading>
+          PushBullet API Configuration <i class="pull-right glyphicon glyphicon-cog"></i>
+        </accordion-heading>
+        <div>Click <a href="https://www.pushbullet.com/account" target="_blank">here</a> to get an access token</div>
+        <div ng-class="{'has-error' : !(ApiKeySet()), 'has-success' : (ApiKeySet()) }">
+          <div class="col-md-6">
+            <input type="text" class="token form-control" placeholder="API Token" ng-change="SetToken()" ng-model="config.pushBulletApiToken"/>
+          </div>
+          <div class="col-md-6">
+            <div class="alert alert-danger" ng-if="!(ApiKeySet())">API Token is required</div>
+          </div>
+        </div>
+      </accordion-group>
+    </accordion>
+  </div>
+</div>
 
-  <div>
-    <h2>Subscriptions</h2>
-    <div ng-repeat="s in model.subscriptions">
-      <app-subscription data="s"></app-subscription>
-    </div>
-  </div>
-  <br><br>
-  <div class="btn-group">
-    <button class="btn btn-default" ng-click="Save()">Save</button>
-    <button class="btn btn-secondary" ng-click="Reset()">Reset</button>
-  </div>
-  <span ng-bind="saveStatus"></span>
+<h3>Event Subscriptions</h3>
+<tabset>
+  <tab ng-repeat="s in model.subscriptions" heading="{{ GetDeviceName(s.deviceId); }}">
+    <app-subscription data="s"></app-subscription>
+  </tab>
+</tabset>
+<br><br>
+<div class="btn-group" role="group" aria-label="Functions">
+  <button class="btn btn-primary" ng-click="Save()">Save</button>
+  <button class="btn btn-warning" ng-click="Reset()">Reset</button>
+</div>
+<span ng-bind="saveStatus"></span>
 </div>
 
 <!-- build:js scripts/vendor.js -->

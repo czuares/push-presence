@@ -21,6 +21,7 @@ chrome.idle.onStateChanged.addListener(function (newstate) {
 });
 
 var onEvent = function(newstate){
+
   console.log('State changed to ' + newstate);
 
   if (lastState === null) {
@@ -31,6 +32,11 @@ var onEvent = function(newstate){
   }
 
   lastState = newstate;
+
+  if(!model.globalEnabled) {
+    console.log('Service is paused');
+    return;
+  }
 
   model.subscriptions.forEach(function(sub){
     var inRange = sub.timeframes.some(function(timeframe) {
@@ -47,7 +53,7 @@ var onEvent = function(newstate){
         console.log(evt.eventType + ' not subscribed');
         return;
       }
-      
+
       if (evt.eventType === newstate) {
         console.log('subscribed: ' + evt.eventType);
         handleEvent(sub, evt);
@@ -94,7 +100,9 @@ var isReady = function (subscription) {
 };
 
 var isWithinRange = function (timeframe){
- if (!timeframe.begin || !timeframe.end) {
+  if(timeframe.allDay) return true;
+  
+  if (!timeframe.begin || !timeframe.end) {
     //missing values - invalid
     return false;
   }

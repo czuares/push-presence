@@ -7,6 +7,7 @@
   <!-- build:css styles/vendor.css -->
   <!-- bower:css -->
   <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+  <link rel="stylesheet" href="bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css" />
   <!-- endbower -->
   <!-- endbuild -->
 
@@ -17,8 +18,13 @@
 <body ng-cloak ng-controller="OptionsCtrl">
   <!-- <div>{{ config | json }}</div>
   <div>{{ model | json }}</div> -->
-  <div class="page-header"><h1>PushPresence
-    <small>PushBullet User Presence Extension</small></h1>
+  <div>
+    Enabled: <bs-switch ng-model="model.globalEnabled" type="checkbox"/>
+  </div>
+  <div class="page-header">
+    <h1>PushPresence
+      <small>PushBullet User Presence Extension</small>
+    </h1>
   </div>
   <div class="container">
     <h3>Devices</h3>
@@ -35,7 +41,7 @@
       </div>  
       <div class="col-md-4">
         <accordion>
-          <accordion-group is-open="config.expanded">
+          <accordion-group>
           <accordion-heading>
           PushBullet API Configuration <i class="pull-right glyphicon glyphicon-cog"></i>
         </accordion-heading>
@@ -74,6 +80,8 @@
 <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
 <script src="bower_components/angular/angular.js"></script>
 <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+<script src="bower_components/bootstrap-switch/dist/js/bootstrap-switch.js"></script>
+<script src="bower_components/angular-bootstrap-switch/dist/angular-bootstrap-switch.js"></script>
 <!-- endbower -->
 <!-- endbuild -->
 

@@ -1,6 +1,6 @@
 'use strict';
 
-var pushPresenceApp = angular.module('pushPresenceApp',  ['ui.bootstrap']);
+var pushPresenceApp = angular.module('pushPresenceApp',  ['ui.bootstrap','frapontillo.bootstrap-switch']);
 
 pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
   function ($scope, $window) {
@@ -11,6 +11,23 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
 
     $scope.model = new DataModel();
     $scope.config = new ConfigurationModel();
+
+    var init = function(){
+      chrome.storage.sync.get($scope.config, function(items){
+        console.log('Binding config from synced storage');
+        $scope.config = items;
+        loadApiKey();
+
+        $scope.$apply();
+      });
+
+      chrome.storage.local.get($scope.model, function(items){
+        console.log('Binding data model from local storage');
+        $scope.model = items;
+
+        $scope.$apply();
+      });
+    }
 
     var onlineStateChanged = function(online){
       $scope.$apply(function() {
@@ -34,9 +51,9 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
 
         console.log(res.devices);
         $scope.config.devices = _.chain(res.devices)
-          .where({active:true}).map(function(data){
-            return _.pick(data,['iden','nickname']);
-          }).value();
+        .where({active:true}).map(function(data){
+          return _.pick(data,['iden','nickname']);
+        }).value();
 
         $scope.$apply();
       });
@@ -65,18 +82,12 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
       onlineStateChanged(true);
     }, false);
 
-    chrome.storage.sync.get($scope.config, function(items){
-      console.log('Binding config from synced storage');
-      $scope.config = items;
-      loadApiKey();
+    chrome.storage.onChanged.addListener(function (changes, areaName) {
+      console.log(areaName + ' data changed - reloading');
+      init();
+    });
 
-      $scope.$apply();
-    });
-    chrome.storage.local.get($scope.model, function(items){
-      console.log('Binding data model from local storage');
-      $scope.model = items;
-      $scope.$apply();
-    });
+    init();
 
     $scope.ApiKeySet = function(){
       return $scope.config.pushBulletApiToken.length == 32;
@@ -164,7 +175,7 @@ pushPresenceApp.directive('appSubscription',  function() {
       model: "=data"
     },
     link: function($scope, $parent, element, attrs) {
-      $scope.AddTimeframe = function(a) {
+      $scope.AddTimeframe = function() {
         $scope.model.timeframes.push(new Timeframe());
       };
 
@@ -176,14 +187,25 @@ pushPresenceApp.directive('appSubscription',  function() {
       $scope.DayName = function(day){
         return $scope.$parent.DaysOfWeek[day.id];
       };
+
+      $scope.GetPlaceHolderText = function(evt){
+        var title = capitalize(evt.eventType);
+        if(evt.subscribed){
+          return title;
+        } else{
+          return title + " (Enable event to customize message)";
+        }
+      };
     },
     templateUrl: '../templates/subscription.html'
   };
 });
 
 pushPresenceApp.filter('capitalize', function() {
-  return function(input, all) {
+  return capitalize;
+});
+
+var capitalize = function(input, all) {
     //uses prototype method found in datamodel.js
     return (!!input) ? input.capitalize() : '';
-  }
-});
+  };

@@ -5,22 +5,31 @@
     "manifest_version": 2,
     "default_locale": "en",
     "permissions": [
-        "idle",
-        "storage",
-        "notifications"
+    "idle",
+    "storage",
+    "notifications"
     ],
     "icons": {
         "16": "images/icon-16.png",
         "128": "images/icon-128.png"
-    },
-    "offline_enabled": false,
-    "background": {
-        "scripts": [
+        },
+        "offline_enabled": false,
+        "background": {
+            "scripts": [
             "scripts/datamodel.js",
             "scripts/pushbullet.js",
             "scripts/background.js",
             "scripts/chromereload.js"
-        ]
-    },
-    "options_page": "options.html"
-}
+            ]
+            },
+            "options_page": "options.html",
+            "browser_action": {
+                "default_icon": {
+                    "16": "images/icon-16.png",
+                    "128": "images/icon-128.png"
+                    },
+                    "default_popup": "popup.html",      
+                    "default_title": "__MSG_appName__"
+                }
+            }
+            

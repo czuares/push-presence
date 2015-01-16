@@ -12,20 +12,16 @@ if(Object.freeze){
 function ConfigurationModel() {
   this.pushBulletApiToken = '';
   this.devices = [];
-  this.expanded = true;
 }
 
 function DataModel(){
   this.subscriptions = [];
+  this.globalEnabled = true;
 }
 
 function Subscription() {
   this.deviceId = null;
   this.timeframes = [new Timeframe()];
-  this.events = [];
-  for(var e in EventTypes){
-    this.events.push(new Event(EventTypes[e]));
-  }
 }
 
 function Event(et){
@@ -40,12 +36,20 @@ function Day(dayIndex){
 }
 
 function Timeframe() {
+  this.name = '';
+  this.allDay = true;
   this.begin = new Date().toISOString();
   this.end = new Date().toISOString();
   this.invert = false;
+
   this.days = [];
   for(var d in DaysOfWeek){
     this.days.push(new Day(d));
+  }
+
+  this.events = [];
+  for(var e in EventTypes){
+    this.events.push(new Event(EventTypes[e]));
   }
 }
 

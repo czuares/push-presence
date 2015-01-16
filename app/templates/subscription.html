@@ -1,78 +1,93 @@
 <div class="panel panel-default">
- <!--  {{model | json}} -->
- <div class="panel-heading">
-   <div class="row">
-    <div class="col-md-4">
-      <h4>Events types to receive pushes for:</h4>
+    <!--  {{model | json}} -->
+    <div class="panel-heading">
+        <div class="row">
+            <div class="col-md-4" ng-if="model.enabled">
+                <h4>Events types to receive pushes for:</h4>
+            </div>
+            <div class="col-md-6" ng-if="model.enabled">
+                <h4>When to receive pushes:</h4>
+            </div>
+            <div class="col-md-2">
+                <bs-switch ng-model="model.enabled" type="checkbox" />
+            </div>
+        </div>
     </div>
-    <div class="col-md-8">
-      <h4>When to receive pushes:</h4>
-    </div>
-  </div>
-</div>
-<div class="panel-body container">
-  <div class="row" ng-repeat="t in model.timeframes">
-    <div class="row">
-      <div class="col-md-12">
-        <strong class="col-md-4">
-          <input type="text" class="form-control" aria-label="Name" placeholder="Subscription Name" ng-model="t.name" />
-        </strong>
-      </div>
-    </div>
-    <div class="col-md-4">
-      <div ng-repeat="e in t.events" ng-init="title=(e.eventType | capitalize)">
-        <!--     {{e | json }} -->
-        <div class="input-group">
-          <span class="input-group-addon">
+    <div class="panel-body container">
+        <div ng-if="model.enabled" class="row" ng-repeat="t in model.timeframes">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <input type="text" class="form-control" aria-label="Name" placeholder="Subscription Name" ng-model="t.name" />
+                            <span class="input-group-btn">
+            <button class="btn btn-danger" type="button" ng-click="RemoveTimeFrame($index)" ng-disabled="model.timeframes.length === 1">Remove</button>
+          </span>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <label class="checkbox">
+                            <input type="checkbox" ng-model="t.allDay" />{{ GetScheduleName(t) }}
+                        </label>
+                    </div>
+                    <div class="col-md-5">
+                        <p class="help-block" ng-if="t.allDay">Receive push notifications every day at all times of day (uncheck for more granular control).
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div ng-repeat="e in t.events" ng-init="title=(e.eventType | capitalize)">
+                    <!--     {{e | json }} -->
+                    <div class="input-group">
+                        <span class="input-group-addon">
             <input type="checkbox" aria-label="{{title}}" ng-model="e.subscribed" >
           </span>
-          <input type="text" class="form-control" aria-label="Message" ng-disabled="!e.subscribed" placeholder="{{title}}" ng-model="e.customMessage" />
-        </div>
-      </div>
-      <p class="help-block">
-        Check the box next to the event you would like to receive pushes for. Optionally customize the message in each of the text boxes.
-      </p>
-    </div>
-    <div class="col-md-8">
-      <div class="row">
-        <div class="col-md-3">
-          <label class="checkbox">
-            <input type="checkbox" ng-model="t.allDay" /> All Day
-          </label>
-        </div>
-        <div class="col-md-3">
-          <button class="btn btn-default" ng-click="RemoveTimeFrame($index)" ng-disabled="model.timeframes.length === 1">Remove</button>
-        </div>
-      </div>
-      <div ng-if="!t.allDay">
-        <div class="row">
-          <div class="col-md-6">
-            <label class="checkbox"><input type="checkbox" ng-model="t.invert"/>Invert</label>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-6">
-            <label>From:<timepicker ng-model="t.begin" isodatestring></timepicker></label>
-          </div>
-          <div class="col-md-6">
-            <label>To:<timepicker ng-model="t.end" isodatestring></timepicker></label>
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-md-12">
-            <div class="btn-group" ng-repeat="d in t.days">
-              <label class="btn btn-default" ng-model="d.enabled" btn-checkbox>{{DayName(d) | capitalize}}</label>
+                        <input type="text" class="form-control" aria-label="Message" ng-disabled="!e.subscribed" placeholder="{{title}}" ng-model="e.customMessage" />
+                    </div>
+                </div>
+                <p class="help-block">
+                    Check the box next to the event you would like to receive pushes for. Optionally customize the message in each of the text boxes.
+                </p>
             </div>
-          </div>
+            <div class="col-md-8">
+                <div ng-if="!t.allDay">
+                    <div class="row">
+                        <div class="col-md-11 col-md-offset-1">
+                            <div class="btn-group" ng-repeat="d in t.days">
+                                <label class="btn btn-default" ng-model="d.enabled" btn-checkbox>{{DayName(d) | capitalize}}</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label>From:
+                                <timepicker ng-model="t.begin" isodatestring></timepicker>
+                            </label>
+                        </div>
+                        <div class="col-md-6">
+                            <label>To:
+                                <timepicker ng-model="t.end" isodatestring></timepicker>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="checkbox">
+                                <input type="checkbox" ng-model="t.invert" />Invert</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <hr class="col-md-10" ng-if="!$last" />
         </div>
-      </div>
+        <div ng-if="!model.enabled" class="help-block">
+            Device is disabled. You will not receive any pushes on this device.
+        </div>
     </div>
-    <hr class="col-md-10" ng-if="!$last" />
-  </div>
-</div>
-<div class="panel-footer">
-  <div class="btn-group" role="group">
-    <button class="btn btn-default" ng-click="AddTimeframe()">Add Timeframe</button>
-  </div>
-</div>
+    <div class="panel-footer">
+        <div class="btn-group" role="group" ng-if="model.enabled">
+            <button class="btn btn-default" ng-click="AddTimeframe()">Add Push Schedule</button>
+        </div>
+    </div>
 </div>

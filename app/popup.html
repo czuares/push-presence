@@ -1,40 +1,49 @@
 <!doctype html>
 <html ng-app="pushPresencePopup" ng-csp>
+
 <head>
-  <meta charset="utf-8">
-  <title>PushPresence</title>
+    <meta charset="utf-8">
+    <title>PushPresence</title>
 
-  <!-- build:css styles/vendor.css -->
-  <!-- bower:css -->
-  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
-  <link rel="stylesheet" href="bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css" />
-  <!-- endbower -->
-  <!-- endbuild -->
+    <!-- build:css styles/vendor.css -->
+    <!-- bower:css -->
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css" />
+    <!-- endbower -->
+    <!-- endbuild -->
 
-  <!-- build:css styles/main.css -->
-  <link rel="stylesheet" href="styles/main.css">
-  <!-- endbuild -->
+    <!-- build:css styles/main.css -->
+    <link rel="stylesheet" href="styles/main.css">
+    <!-- endbuild -->
 </head>
+
 <body ng-cloak ng-controller="PopupCtrl">
-  Enabled: {{ model.globalEnabled }}
-  <bs-switch ng-model="model.globalEnabled" type="checkbox"/>
-</div>
+    <div>
+        Enabled: {{ model.globalEnabled }}
+        <bs-switch ng-model="model.globalEnabled" type="checkbox" />
+    </div>
+    <div>
+        <button type="button" class="btn btn-default" aria-label="Options" ng-click="OpenOptions()">
+            <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+        </button>
+    </div>
 
-<!-- build:js scripts/vendor.js -->
-<!-- bower:js -->
-<script src="bower_components/jquery/dist/jquery.js"></script>
-<script src="bower_components/underscore/underscore.js"></script>
-<script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
-<script src="bower_components/angular/angular.js"></script>
-<script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
-<script src="bower_components/bootstrap-switch/dist/js/bootstrap-switch.js"></script>
-<script src="bower_components/angular-bootstrap-switch/dist/angular-bootstrap-switch.js"></script>
-<!-- endbower -->
-<!-- endbuild -->
+    <!-- build:js scripts/vendor.js -->
+    <!-- bower:js -->
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/underscore/underscore.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="bower_components/bootstrap-switch/dist/js/bootstrap-switch.js"></script>
+    <script src="bower_components/angular-bootstrap-switch/dist/angular-bootstrap-switch.js"></script>
+    <!-- endbower -->
+    <!-- endbuild -->
 
-<!-- build:js scripts/options.js -->
-<script src="scripts/datamodel.js"></script>
-<script src="scripts/angular/pushPresencePopup.js"></script>
-<!-- endbuild -->
+    <!-- build:js scripts/popup.js -->
+    <script src="scripts/datamodel.js"></script>
+    <script src="scripts/angular/pushPresencePopup.js"></script>
+    <!-- endbuild -->
 </body>
+
 </html>

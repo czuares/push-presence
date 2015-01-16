@@ -5,13 +5,20 @@
     <div class="col-md-4">
       <h4>Events types to receive pushes for:</h4>
     </div>
-    <div class="col-md-6">
+    <div class="col-md-8">
       <h4>When to receive pushes:</h4>
     </div>
   </div>
 </div>
 <div class="panel-body container">
   <div class="row" ng-repeat="t in model.timeframes">
+    <div class="row">
+      <div class="col-md-12">
+        <strong class="col-md-4">
+          <input type="text" class="form-control" aria-label="Name" placeholder="Subscription Name" ng-model="t.name" />
+        </strong>
+      </div>
+    </div>
     <div class="col-md-4">
       <div ng-repeat="e in t.events" ng-init="title=(e.eventType | capitalize)">
         <!--     {{e | json }} -->
@@ -28,16 +35,13 @@
     </div>
     <div class="col-md-8">
       <div class="row">
-        <div class="col-md-5">
+        <div class="col-md-3">
           <label class="checkbox">
             <input type="checkbox" ng-model="t.allDay" /> All Day
           </label>
         </div>
-        <div class="col-md-2">
-          <button class="btn btn-default" ng-click="RemoveTimeFrame($index)" ng-disabled="model.timeframes.length === 1">Remove</button>
-        </div>
         <div class="col-md-3">
-          <input type="text" class="form-control" aria-label="Name" placeholder="Subscription Name" ng-model="t.name" />
+          <button class="btn btn-default" ng-click="RemoveTimeFrame($index)" ng-disabled="model.timeframes.length === 1">Remove</button>
         </div>
       </div>
       <div ng-if="!t.allDay">

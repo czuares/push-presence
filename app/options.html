@@ -2,101 +2,116 @@
 <html ng-app="pushPresenceApp" ng-csp>
 
 <head>
-    <meta charset="utf-8">
-    <title>PushPresence</title>
-
-    <!-- build:css styles/vendor.css -->
-    <!-- bower:css -->
-    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
-    <link rel="stylesheet" href="bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css" />
-    <!-- endbower -->
-    <!-- endbuild -->
-
-    <!-- build:css styles/main.css -->
-    <link rel="stylesheet" href="styles/main.css">
-    <!-- endbuild -->
+  <meta charset="utf-8">
+  <title>PushPresence</title>
+  <!-- build:css styles/vendor.css -->
+  <!-- bower:css -->
+  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+  <link rel="stylesheet" href="bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css" />
+  <!-- endbower -->
+  <!-- endbuild -->
+  <!-- build:css styles/main.css -->
+  <link rel="stylesheet" href="styles/main.css">
+  <!-- endbuild -->
 </head>
 
 <body ng-cloak ng-controller="OptionsCtrl">
-    <!-- <div>{{ config | json }}</div>
-  <div>{{ model | json }}</div> -->
-    <div>
-        Enabled: {{model.globalEnabled}}
-        <bs-switch ng-model="model.globalEnabled" type="checkbox" />
-        <div class="alert alert-warning" ng-show="!model.globalEnabled">Event monitoring is currently off. While monitoring is off, no pushes will be sent to any devices. Change the switch on the left to turn this back on.</div>
-        <div class="alert alert-info" ng-show="model.globalEnabled">Event monitoring is on. Pushes will be sent to subscribed devices during the specified schedules.</div>
-    </div>
-    <div class="page-header">
+  <div>{{ config | json }}</div>
+  <div>{{ model | json }}</div>
+  <div class="page-header">
+    <div class="row">
+      <div class="col-md-8">
         <h1>PushPresence
-      <small>PushBullet User Presence Extension</small>
-    </h1>
+          <small>PushBullet User Presence Extension</small>
+        </h1>
+      </div>
+      <div class="col-md-4">
+        <label>Enabled:
+          <bs-switch ng-model="model.globalEnabled" type="checkbox"></bs-switch>
+        </label>
+        <span class="alert alert-warning" ng-if="!model.globalEnabled">
+          Event monitoring is currently off. While monitoring is off, no pushes will be sent to any devices. Change the switch on the left to turn this back on.
+        </span>
+        <span class="alert alert-info" ng-if="model.globalEnabled">
+          Event monitoring is on. Pushes will be sent to subscribed devices during the specified schedules.
+        </span>
+      </div>
     </div>
-    <div class="container">
-        <h3>Devices</h3>
-        <div class="row">
-            <div class="col-md-3">
-                <select class="nullable form-control" ng-disabled="config.devices.length == 0" ng-change="DeviceSelected()" ng-model="deviceId" ng-options="d.iden as d.nickname for d in config.devices">
-                    <option value="">Select a device</option>
-                </select>
+  </div>
+  <div class="container">
+    <h3>Devices</h3>
+    <div class="row">
+      <div class="col-md-2">
+        <select class="nullable form-control" ng-disabled="config.devices.length == 0" ng-change="DeviceSelected()" ng-model="deviceId" ng-options="d.iden as d.nickname for d in config.devices">
+          <option value="">Select a device</option>
+        </select>
+      </div>
+      <div class="col-md-5 btn-group">
+        <button class="btn btn-primary" ng-disabled="deviceId == null" ng-click="AddSubscription()">Add Device Subscription</button>
+        <button class="btn btn-default" ng-disabled="!online || !ApiKeySet()" ng-click="RefreshDevices()">Refresh Devices</button>
+      </div>
+      <div class="col-md-5">
+        <accordion>
+          <accordion-group>
+            <accordion-heading>
+              PushBullet API Configuration <i class="pull-right glyphicon glyphicon-cog"></i>
+            </accordion-heading>
+            <div>
+              Click <a href="https://www.pushbullet.com/account" target="_blank">here</a> to get an access token
             </div>
-            <div class="col-md-5 btn-group">
-                <button class="btn btn-primary" ng-disabled="deviceId == null" ng-click="AddSubscription()">Add Event Subscription</button>
-                <button class="btn btn-info" ng-disabled="!deviceId" ng-click="TestPush()">Send test push</button>
-                <button class="btn btn-default" ng-disabled="!online || !ApiKeySet()" ng-click="RefreshDevices()">Refresh Devices</button>
+            <div ng-class="{'has-error' : !(ApiKeySet()), 'has-success' : (ApiKeySet()) }">
+              <div class="col-md-12">
+                <div class="input-group">
+                  <input type="text" class="form-control" aria-label="API Token" placeholder="API Token" ng-change="SetToken()" ng-disabled="ApiKeySet()" ng-model="config.pushBulletApiToken" />
+                  <span class="input-group-btn">
+                    <button class="btn btn-danger" type="button" ng-click="RevokeApiToken()" ng-disabled="!(ApiKeySet())">Unregister</button>
+                  </span>
+                </div>
+              </div>
+              <div class="col-md-12">
+                <div class="alert alert-danger" ng-if="!(ApiKeySet())">API Token is required</div>
+              </div>
             </div>
-            <div class="col-md-4">
-                <accordion>
-                    <accordion-group>
-                        <accordion-heading>
-                            PushBullet API Configuration <i class="pull-right glyphicon glyphicon-cog"></i>
-                        </accordion-heading>
-                        <div>Click <a href="https://www.pushbullet.com/account" target="_blank">here</a> to get an access token</div>
-                        <div ng-class="{'has-error' : !(ApiKeySet()), 'has-success' : (ApiKeySet()) }">
-                            <div class="col-md-12">
-                                <input type="text" class="form-control" placeholder="API Token" ng-change="SetToken()" ng-model="config.pushBulletApiToken" />
-                            </div>
-                            <div class="col-md-12">
-                                <div class="alert alert-danger" ng-if="!(ApiKeySet())">API Token is required</div>
-                            </div>
-                        </div>
-                    </accordion-group>
-                </accordion>
-            </div>
-        </div>
-
-        <h3>Event Subscriptions</h3>
-        <tabset>
-            <tab ng-repeat="s in model.subscriptions" heading="{{ GetDeviceName(s.deviceId); }}">
-                <app-subscription data="s"></app-subscription>
-            </tab>
-        </tabset>
-        <br>
-        <br>
-        <div class="btn-group" role="group" aria-label="Functions">
-            <button class="btn btn-primary" ng-click="Save()">Save</button>
-            <button class="btn btn-warning" ng-click="Reset()">Reset</button>
-        </div>
-        <span ng-bind="saveStatus"></span>
+          </accordion-group>
+        </accordion>
+      </div>
     </div>
-
-    <!-- build:js scripts/vendor.js -->
-    <!-- bower:js -->
-    <script src="bower_components/jquery/dist/jquery.js"></script>
-    <script src="bower_components/underscore/underscore.js"></script>
-    <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
-    <script src="bower_components/angular/angular.js"></script>
-    <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
-    <script src="bower_components/bootstrap-switch/dist/js/bootstrap-switch.js"></script>
-    <script src="bower_components/angular-bootstrap-switch/dist/angular-bootstrap-switch.js"></script>
-    <!-- endbower -->
-    <!-- endbuild -->
-
-    <!-- build:js scripts/options.js -->
-    <script src="scripts/pushbullet.js"></script>
-    <script src="scripts/datamodel.js"></script>
-    <script src="scripts/angular/pushPresenceApp.js"></script>
-    <script src="scripts/options.js"></script>
-    <!-- endbuild -->
+    <accordion class="subscriptions">
+      <accordion-group ng-repeat="s in model.subscriptions">
+        <accordion-heading>
+          <i class="glyphicon glyphicon-{{GetDeviceIcon(s)}}"></i> {{ GetDeviceName(s) }}
+          <button class="btn btn-xs btn-danger pull-right" ng-click="RemoveDevice($index,$event)">
+            <i class="glyphicon glyphicon-remove"></i>
+          </button>
+        </accordion-heading>
+        <app-subscription data="s"></app-subscription>
+      </accordion-group>
+    </accordion>
+    <br>
+    <br>
+    <div class="btn-group" role="group" aria-label="Functions">
+      <button class="btn btn-primary" ng-click="Save()">Save</button>
+      <button class="btn btn-danger" ng-click="Reset()">Reset</button>
+    </div>
+    <span ng-bind="saveStatus"></span>
+  </div>
+  <!-- build:js scripts/vendor.js -->
+  <!-- bower:js -->
+  <script src="bower_components/jquery/dist/jquery.js"></script>
+  <script src="bower_components/underscore/underscore.js"></script>
+  <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+  <script src="bower_components/angular/angular.js"></script>
+  <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+  <script src="bower_components/bootstrap-switch/dist/js/bootstrap-switch.js"></script>
+  <script src="bower_components/angular-bootstrap-switch/dist/angular-bootstrap-switch.js"></script>
+  <!-- endbower -->
+  <!-- endbuild -->
+  <!-- build:js scripts/options.js -->
+  <script src="scripts/pushbullet.js"></script>
+  <script src="scripts/datamodel.js"></script>
+  <script src="scripts/angular/pushPresenceApp.js"></script>
+  <script src="scripts/options.js"></script>
+  <!-- endbuild -->
 </body>
 
 </html>

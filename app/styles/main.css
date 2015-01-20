@@ -17,3 +17,7 @@ fieldset{
 	border: 1px solid black;
 	padding:1em;
 }
+
+accordion.subscriptions .panel-heading {
+  padding-bottom: 15px;
+}

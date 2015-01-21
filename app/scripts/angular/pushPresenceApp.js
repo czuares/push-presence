@@ -61,6 +61,7 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
 
           var newSubs = _.chain(activeDevices)
           .filter(function(dev){
+            //filter out existing
             return !_.some(validSubscriptions, function(sub){
               return sub.device.id == dev.iden;
             });

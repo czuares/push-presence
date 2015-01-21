@@ -68,7 +68,7 @@
       </div>
     </div>
     <accordion class="subscriptions">
-      <accordion-group ng-repeat="s in model.subscriptions">
+      <accordion-group ng-repeat="s in model.subscriptions | orderBy:['-enabled','device.name']">
         <accordion-heading>
           <span ng-class="{'disabled' : !s.enabled, 'text-success': s.enabled }">
             <i class="glyphicon glyphicon-{{ GetDeviceIcon(s) }}"></i> {{ GetDeviceName(s) }}

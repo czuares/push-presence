@@ -17,7 +17,7 @@ chrome.storage.onChanged.addListener(function(changes, areaName) {
 });
 
 chrome.idle.onStateChanged.addListener(function(newState) {
-  onEvent(newstate);
+  onEvent(newState);
 });
 
 var onEvent = function(newState) {
@@ -27,11 +27,9 @@ var onEvent = function(newState) {
   if (lastState === null) {
     lastState = newState;
   } else if (lastState === newState) {
-    console.log('State has not changed. Still ' + newState);
+    console.log('State has not changed since last notification. Still ' + newState);
     return;
   }
-
-  lastState = newState;
 
   if (!model.globalEnabled) {
     console.log('Service is paused');
@@ -39,24 +37,31 @@ var onEvent = function(newState) {
   }
 
   model.subscriptions.forEach(function(sub) {
+    if(!sub.enabled){
+      console.log('Device disabled', sub.device.name);
+      return; //continue
+    }
+    console.log('Device enabled', sub.device.nam);
+
     var inRange = false;
 
     sub.timeframes.forEach(function(timeframe) {
       if (!isWithinRange(timeframe))
-        continue;
+        return;  //continue
 
       inRange = true;
       timeframe.events.forEach(function(evt) {
         if (!evt.subscribed) {
           console.log(evt.eventType + ' not subscribed');
-          return;
+          return;  //continue
         }
 
         if (evt.eventType === newState) {
-          console.log('subscribed', evt.eventType);
-          handleEvent(sub, evt);
+          lastState = newState; //only update state if subscribed
+          console.log('Subscribed to event state: ' + evt.eventType);
+          handleEvent(sub, evt, model.showDesktopNotifications);
         } else {
-          console.log(evt.eventType + ' subscribed but not current state');
+          console.log(evt.eventType + ' is subscribed but not current state');
         }
       });
     });
@@ -68,7 +73,7 @@ var onEvent = function(newState) {
   });
 };
 
-var handleEvent = function(subscription, evt) {
+var handleEvent = function(sub, evt, showDesktopNotifications) {
   var msgTitle = 'PushPresence update';
   var state = navigator.onLine ? '' : '[Offline] ';
 
@@ -80,27 +85,29 @@ var handleEvent = function(subscription, evt) {
     iconUrl: '../images/icon-128.png'
   };
 
-  chrome.notifications.create('id', opt, function(id) {
-    console.log('Notification created ' + id + ' at ' + new Date());
-  });
+  if(showDesktopNotifications){
+    chrome.notifications.create('id', opt, function(id) {
+      console.log('Notification created ' + id + ' at ' + new Date());
+    });
+  }
 
   if (!navigator.onLine) {
     console.log('not online - not sending push');
     return;
   }
 
-  if (isReady(subscription)) {
-    console.log('Sending push');
-    var res = PushBullet.push('note', subscription.deviceId, null, {
+  if (isReady(sub)) {
+    console.log('Sending push', sub.device.name);
+    var res = PushBullet.push('note', sub.device.id, null, {
       title: opt.title,
       body: (!!evt.customMessage) ? evt.customMessage : opt.message
     });
-    console.log(res);
+    console.log('Push response', res);
   }
 }
 
-var isReady = function(subscription) {
-  return (subscription.deviceId) && (PushBullet.APIKey);
+var isReady = function(sub) {
+  return (sub.device.id) && (PushBullet.APIKey);
 };
 
 var isWithinRange = function(timeframe) {
@@ -114,7 +121,7 @@ var isWithinRange = function(timeframe) {
   var dayId = new Date().getDay();
   var isTodayEnabled = timeframe.days.some(function(d) {
     var enabled = (d.id == dayId && d.enabled);
-    console.log('enabled ' + d.id + ': ' + enabled);
+    //console.log('enabled ' + d.id + ': ' + enabled);
     return enabled;
   });
 

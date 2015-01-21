@@ -38,7 +38,7 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
 
     var loadApiKey = function() {
       PushBullet.APIKey = $scope.config.pushBulletApiToken;
-      console.log('api key set');
+      console.log('API key set');
     };
 
     var getDevices = function() {
@@ -49,17 +49,29 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
           return;
         }
 
-        //TODO: add/remove new/old
+        var activeDevices =  _.where(res.devices, { active: true });
+        console.log('activeDevices',activeDevices);
 
-        console.log(res.devices);
-        $scope.model.subscriptions = _.chain(res.devices)
-          .where({
-            active: true
-          }).map(function(data) {
+        var validSubscriptions = _.filter($scope.model.subscriptions,
+          function(sub){
+            //remove subs with devices missing/deactivated in PushBullet
+            return _.where(activeDevices, {iden: sub.device.id });
+          });
+          console.log('validSubscriptions',validSubscriptions);
+
+          var newSubs = _.chain(activeDevices)
+          .filter(function(dev){
+            return !_.some(validSubscriptions, function(sub){
+              return sub.device.id == dev.iden;
+            });
+          }).map(function(data){
             return new Subscription(data);
           }).value();
+          console.log('newSubs', newSubs);
 
-        $scope.$apply();
+        $scope.model.subscriptions = _.union(validSubscriptions, newSubs);
+        console.log('$scope.model.subscriptions',$scope.model.subscriptions);
+        saveModel();
       });
     };
 

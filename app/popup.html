@@ -19,8 +19,7 @@
 
 <body ng-cloak ng-controller="PopupCtrl">
   <div>
-    Enabled: {{ model.globalEnabled }}
-    <bs-switch ng-model="model.globalEnabled" type="checkbox"></bs-switch>
+    Enabled: <bs-switch ng-model="model.globalEnabled" type="checkbox"></bs-switch>
   </div>
   <div>
     <button type="button" class="btn btn-default" aria-label="Options" ng-click="OpenOptions()">

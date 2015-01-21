@@ -1,3 +1,5 @@
+'use strict';
+
 var app = angular.module('pushPresencePopup', ['ui.bootstrap', 'frapontillo.bootstrap-switch']);
 
 app.controller('PopupCtrl', ['$scope', '$window',

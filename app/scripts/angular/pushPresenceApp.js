@@ -5,11 +5,11 @@ var pushPresenceApp = angular.module('pushPresenceApp', ['ui.bootstrap', 'frapon
 pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
   function($scope, $window) {
 
-    $scope.deviceId = null;
     $scope.online = navigator.onLine;
     $scope.DaysOfWeek = $window.DaysOfWeek;
 
-    $scope.model = new DataModel();
+    var initModel = new DataModel();
+    $scope.model = angular.copy(initModel);
     $scope.config = new ConfigurationModel();
 
     var init = function() {
@@ -26,12 +26,6 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
         $scope.model = items;
 
         $scope.$apply();
-      });
-    };
-
-    var getDevice = function(sub){
-      return _.findWhere($scope.config.devices, {
-        iden: sub.deviceId
       });
     };
 
@@ -55,12 +49,14 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
           return;
         }
 
+        //TODO: add/remove new/old
+
         console.log(res.devices);
-        $scope.config.devices = _.chain(res.devices)
+        $scope.model.subscriptions = _.chain(res.devices)
           .where({
             active: true
           }).map(function(data) {
-            return _.pick(data, ['iden', 'type', 'nickname']);
+            return new Subscription(data);
           }).value();
 
         $scope.$apply();
@@ -74,7 +70,28 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
       console.log('Resetting models');
       $scope.model = new DataModel();
       $scope.config = new ConfigurationModel();
-      $scope.Save();
+
+      saveConfig();
+      //no need to save model - watch handles this
+    };
+
+    var saveConfig = function() {
+      chrome.storage.sync.set($scope.config, function() {
+        console.log('Saved config');
+        $scope.$apply();
+      });
+    }
+
+    var saveModel = function() {
+      chrome.storage.local.set($scope.model, function() {
+        $scope.saveStatus = 'Saved';
+        $window.setTimeout(function() {
+          $scope.saveStatus = '';
+          $scope.$apply();
+        }, 2000);
+        console.log('Saved data model');
+        $scope.$apply();
+      });
     };
 
     $window.addEventListener("offline", function() {
@@ -89,15 +106,23 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
       init();
     });
 
-    init();
+    $scope.$watch('model', function(newValue, oldValue) {
+      if (newValue === oldValue)
+        return;
 
-    $scope.RemoveDevice = function(idx, e) {
-      if (e) {
-        e.preventDefault();
-        e.stopPropagation();
+      //hack for preventing model from saving on load
+      if (initModel != null) {
+        if (angular.equals(initModel, oldValue)) {
+          initModel = null;
+          return;
+        }
       }
-      $scope.model.subscriptions.splice(idx, 1);
-    };
+
+      console.log('Model changed');
+      saveModel();
+    }, true);
+
+    init();
 
     $scope.RevokeApiToken = function() {
       if (!$scope.ApiKeySet()) {
@@ -111,19 +136,19 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
     };
 
     $scope.SetToken = function() {
+      if (!$scope.ApiKeySet())
+        return;
+
       loadApiKey();
-      if (PushBullet.APIKey) {
-        getDevices();
-      }
+      getDevices();
+      saveConfig();
     };
 
     $scope.GetDeviceIcon = function(sub) {
-      var device = getDevice(sub);
-
-      if (!device) return 'question-sign';
+      if (!sub) return 'question-sign';
       //console.log('Device type: ' + device.type);
 
-      switch (device.type) {
+      switch (sub.device.type) {
         case 'chrome':
           return 'globe';
         default:
@@ -136,43 +161,18 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
     };
 
     $scope.GetDeviceName = function(sub) {
-      var device = getDevice(sub);
-
-      if (!device) return 'Unknown';
-      return (!!device.nickname) ? device.nickname : sub.deviceId;
+      if (!sub) return 'Unknown';
+      return sub.device.name;
     };
 
     $scope.DeviceSelected = function() {
       console.log('Selected device ' + $scope.deviceId);
     };
 
-    $scope.Save = function() {
-      chrome.storage.sync.set($scope.config, function() {
-        $scope.saveStatus = 'Saved';
-        console.log('Saved config');
-        $scope.$apply();
-      });
-
-      chrome.storage.local.set($scope.model, function() {
-        $scope.saveStatus = 'Saved';
-        console.log('Saved data model');
-        $scope.$apply();
-      });
-    };
-
-    $scope.Reset = function() {
-      resetData();
-    };
-
     $scope.RefreshDevices = function() {
-      $scope.deviceId = null;
+      if (!window.confirm("New devices will be added and stale devices will be removed.\n\nWould you like to continue?"))
+        return;
       getDevices();
-    };
-
-    $scope.AddSubscription = function() {
-      var sub = new Subscription();
-      sub.deviceId = $scope.deviceId;
-      $scope.model.subscriptions.push(sub);
     };
 
   }

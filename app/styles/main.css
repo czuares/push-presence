@@ -18,6 +18,10 @@ fieldset{
 	padding:1em;
 }
 
-accordion.subscriptions .panel-heading {
-  padding-bottom: 15px;
+accordion .disabled {
+  color: gray;
+}
+
+accordion a.accordion-toggle:hover {
+  text-decoration : none;
 }

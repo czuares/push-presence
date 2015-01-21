@@ -7,66 +7,68 @@ var config = new ConfigurationModel();
 
 var lastState = null;
 
-chrome.runtime.onInstalled.addListener(function (details) {
+chrome.runtime.onInstalled.addListener(function(details) {
   console.log('previousVersion', details.previousVersion);
 });
 
-chrome.storage.onChanged.addListener(function (changes, areaName) {
+chrome.storage.onChanged.addListener(function(changes, areaName) {
   console.log(areaName + ' data changed - reloading');
   init();
 });
 
-chrome.idle.onStateChanged.addListener(function (newstate) {
+chrome.idle.onStateChanged.addListener(function(newState) {
   onEvent(newstate);
 });
 
-var onEvent = function (newstate) {
+var onEvent = function(newState) {
 
-  console.log('State changed to ' + newstate);
+  console.log('State changed to ' + newState);
 
   if (lastState === null) {
-    lastState = newstate;
-  } else if (lastState === newstate) {
-    console.log('State has not changed. Still ' + newstate);
+    lastState = newState;
+  } else if (lastState === newState) {
+    console.log('State has not changed. Still ' + newState);
     return;
   }
 
-  lastState = newstate;
+  lastState = newState;
 
   if (!model.globalEnabled) {
     console.log('Service is paused');
     return;
   }
 
-  model.subscriptions.forEach(function (sub) {
-    var inRange = sub.timeframes.some(function (timeframe) {
-      return isWithinRange(timeframe);
-    });
+  model.subscriptions.forEach(function(sub) {
+    var inRange = false;
 
-    if (!inRange) {
-      console.log('Not within any range - Not sending notification');
-      return;
-    }
+    sub.timeframes.forEach(function(timeframe) {
+      if (!isWithinRange(timeframe))
+        continue;
 
-    sub.timeframes.forEach(function (timeframe) {
-      timeframe.events.forEach(function (evt) {
+      inRange = true;
+      timeframe.events.forEach(function(evt) {
         if (!evt.subscribed) {
           console.log(evt.eventType + ' not subscribed');
           return;
         }
 
-        if (evt.eventType === newstate) {
-          console.log('subscribed: ' + evt.eventType);
+        if (evt.eventType === newState) {
+          console.log('subscribed', evt.eventType);
           handleEvent(sub, evt);
         } else {
           console.log(evt.eventType + ' subscribed but not current state');
         }
       });
     });
+
+    if (!inRange) {
+      console.log('Not within any range - Not sending notification');
+      return;
+    }
   });
 };
 
-var handleEvent = function (subscription, evt) {
+var handleEvent = function(subscription, evt) {
   var msgTitle = 'PushPresence update';
   var state = navigator.onLine ? '' : '[Offline] ';
 
@@ -78,7 +80,7 @@ var handleEvent = function (subscription, evt) {
     iconUrl: '../images/icon-128.png'
   };
 
-  chrome.notifications.create('id', opt, function (id) {
+  chrome.notifications.create('id', opt, function(id) {
     console.log('Notification created ' + id + ' at ' + new Date());
   });
 
@@ -97,11 +99,11 @@ var handleEvent = function (subscription, evt) {
   }
 }
 
-var isReady = function (subscription) {
+var isReady = function(subscription) {
   return (subscription.deviceId) && (PushBullet.APIKey);
 };
 
-var isWithinRange = function (timeframe) {
+var isWithinRange = function(timeframe) {
   if (timeframe.allDay) return true;
 
   if (!timeframe.begin || !timeframe.end) {
@@ -110,7 +112,7 @@ var isWithinRange = function (timeframe) {
   }
 
   var dayId = new Date().getDay();
-  var isTodayEnabled = timeframe.days.some(function (d) {
+  var isTodayEnabled = timeframe.days.some(function(d) {
     var enabled = (d.id == dayId && d.enabled);
     console.log('enabled ' + d.id + ': ' + enabled);
     return enabled;
@@ -146,12 +148,12 @@ var isWithinRange = function (timeframe) {
 }
 
 function init() {
-  chrome.storage.sync.get(config, function (items) {
+  chrome.storage.sync.get(config, function(items) {
     console.log('got synced config from storage');
     PushBullet.APIKey = items.pushBulletApiToken;
   });
 
-  chrome.storage.local.get(model, function (items) {
+  chrome.storage.local.get(model, function(items) {
     console.log('got local data from storage');
     model = items;
   });

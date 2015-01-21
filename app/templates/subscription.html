@@ -19,7 +19,7 @@
         <div class="col-md-12">
           <div class="col-md-4">
             <div class="input-group">
-              <input type="text" class="form-control" aria-label="Name" placeholder="Schedule Name" ng-model="t.name" />
+              <input type="text" class="form-control" aria-label="Name" placeholder="Name" ng-model="t.name" />
               <span class="input-group-btn">
                 <button class="btn btn-danger" type="button" ng-click="RemoveTimeFrame($index)" ng-disabled="model.timeframes.length === 1">Remove</button>
               </span>
@@ -31,7 +31,8 @@
             </label>
           </div>
           <div class="col-md-5">
-            <p class="help-block" ng-if="t.allDay">Receive push notifications every day at all times of day (uncheck for more granular control).
+            <p class="help-block" ng-if="t.allDay">
+              Receive push notifications every day at all times of day (uncheck for more granular control).
             </p>
           </div>
         </div>
@@ -88,7 +89,7 @@
   <div class="panel-footer">
     <div class="btn-group" role="group" ng-if="model.enabled">
       <button class="btn btn-default" ng-click="AddTimeframe()">Add Push Schedule</button>
-      <button class="btn btn-info" ng-disabled="!model.deviceId" ng-click="TestPush(model.deviceId)">Send test push</button>
+      <button class="btn btn-info" ng-disabled="!model.device.id" ng-click="TestPush(model.device.id)">Send test push</button>
     </div>
   </div>
 </div>

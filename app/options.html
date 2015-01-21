@@ -16,8 +16,10 @@
 </head>
 
 <body ng-cloak ng-controller="OptionsCtrl">
-  <div>{{ config | json }}</div>
-  <div>{{ model | json }}</div>
+  <!-- <div>
+    {{ config | json }}
+    <hr> {{ model | json }}
+  </div> -->
   <div class="page-header">
     <div class="row">
       <div class="col-md-8">
@@ -39,39 +41,28 @@
     </div>
   </div>
   <div class="container">
-    <h3>Devices</h3>
     <div class="row">
-      <div class="col-md-2">
-        <select class="nullable form-control" ng-disabled="config.devices.length == 0" ng-change="DeviceSelected()" ng-model="deviceId" ng-options="d.iden as d.nickname for d in config.devices">
-          <option value="">Select a device</option>
-        </select>
-      </div>
-      <div class="col-md-5 btn-group">
-        <button class="btn btn-primary" ng-disabled="deviceId == null" ng-click="AddSubscription()">Add Device Subscription</button>
-        <button class="btn btn-default" ng-disabled="!online || !ApiKeySet()" ng-click="RefreshDevices()">Refresh Devices</button>
-      </div>
-      <div class="col-md-5">
+      <div class="col-md-5 col-md-offset-7">
         <accordion>
           <accordion-group>
             <accordion-heading>
-              PushBullet API Configuration <i class="pull-right glyphicon glyphicon-cog"></i>
+              PushBullet Configuration <i class="pull-right glyphicon glyphicon-cog"></i>
             </accordion-heading>
             <div>
               Click <a href="https://www.pushbullet.com/account" target="_blank">here</a> to get an access token
             </div>
             <div ng-class="{'has-error' : !(ApiKeySet()), 'has-success' : (ApiKeySet()) }">
-              <div class="col-md-12">
-                <div class="input-group">
-                  <input type="text" class="form-control" aria-label="API Token" placeholder="API Token" ng-change="SetToken()" ng-disabled="ApiKeySet()" ng-model="config.pushBulletApiToken" />
-                  <span class="input-group-btn">
-                    <button class="btn btn-danger" type="button" ng-click="RevokeApiToken()" ng-disabled="!(ApiKeySet())">Unregister</button>
-                  </span>
-                </div>
+              <div class="input-group">
+                <input type="text" class="form-control" aria-label="API Token" placeholder="API Token" ng-change="SetToken()" ng-disabled="ApiKeySet()" ng-model="config.pushBulletApiToken" />
+                <span class="input-group-btn">
+                  <button class="btn btn-danger" type="button" ng-click="RevokeApiToken()" ng-disabled="!(ApiKeySet())">Unregister</button>
+                </span>
               </div>
-              <div class="col-md-12">
-                <div class="alert alert-danger" ng-if="!(ApiKeySet())">API Token is required</div>
+              <div class="alert alert-danger" ng-if="!(ApiKeySet())">
+                API Token is required
               </div>
             </div>
+            <button class="btn btn-default" ng-disabled="!online || !ApiKeySet()" ng-click="RefreshDevices()">Refresh Devices</button>
           </accordion-group>
         </accordion>
       </div>
@@ -79,20 +70,13 @@
     <accordion class="subscriptions">
       <accordion-group ng-repeat="s in model.subscriptions">
         <accordion-heading>
-          <i class="glyphicon glyphicon-{{GetDeviceIcon(s)}}"></i> {{ GetDeviceName(s) }}
-          <button class="btn btn-xs btn-danger pull-right" ng-click="RemoveDevice($index,$event)">
-            <i class="glyphicon glyphicon-remove"></i>
-          </button>
+          <span ng-class="{'disabled' : !s.enabled, 'text-success': s.enabled }">
+            <i class="glyphicon glyphicon-{{ GetDeviceIcon(s) }}"></i> {{ GetDeviceName(s) }}
+          </span>
         </accordion-heading>
         <app-subscription data="s"></app-subscription>
       </accordion-group>
     </accordion>
-    <br>
-    <br>
-    <div class="btn-group" role="group" aria-label="Functions">
-      <button class="btn btn-primary" ng-click="Save()">Save</button>
-      <button class="btn btn-danger" ng-click="Reset()">Reset</button>
-    </div>
     <span ng-bind="saveStatus"></span>
   </div>
   <!-- build:js scripts/vendor.js -->

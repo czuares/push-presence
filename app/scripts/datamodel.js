@@ -18,7 +18,12 @@ if (Object.freeze) {
 
 function ConfigurationModel() {
   this.pushBulletApiToken = '';
-  this.devices = [];
+}
+
+function Device(d) {
+  this.id = d.iden;
+  this.name = d.nickname;
+  this.type = d.type;
 }
 
 function DataModel() {
@@ -26,10 +31,11 @@ function DataModel() {
 
   this.globalEnabled = true;
   this.showDesktopNotifications = true;
+  this.hideDisabled = false;
 }
 
-function Subscription() {
-  this.deviceId = null;
+function Subscription(d) {
+  this.device = new Device(d);
   this.enabled = true;
   this.timeframes = [new Timeframe()];
 }
@@ -63,6 +69,6 @@ function Timeframe() {
   }
 }
 
-String.prototype.capitalize = function () {
+String.prototype.capitalize = function() {
   return this.charAt(0).toUpperCase() + this.slice(1);
 };

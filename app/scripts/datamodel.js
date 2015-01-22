@@ -42,7 +42,7 @@ function Subscription(d) {
 
 function Event(et) {
   this.eventType = et;
-  this.subscribed = false;
+  this.subscribed = true;
   this.customMessage = '';
 }
 

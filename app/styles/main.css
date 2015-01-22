@@ -1,27 +1,35 @@
 body {
   padding: 20px;
 }
-
 .token {
   width: 300px;
 }
-
-.nav, .pagination, .carousel, .panel-title a { cursor: pointer; }
-
+.nav, .pagination, .carousel, .panel-title a {
+  cursor: pointer;
+}
 .alert {
-  max-width:350px;
-  display:inline-block;
+  max-width: 350px;
+  display: inline-block;
 }
-
-fieldset{
-	border: 1px solid black;
-	padding:1em;
+fieldset {
+  border: 1px solid black;
+  padding: 1em;
 }
-
 accordion .disabled {
   color: gray;
 }
+accordion a.accordion-toggle:hover, accordion a.accordion-toggle:focus {
+  text-decoration: none;
+}
+.popup {
+  min-width: 400px;
+}
 
-accordion a.accordion-toggle:hover {
-  text-decoration : none;
+.pb-green{
+  color: rgb(96, 187, 116);
+}
+
+
+.device {
+  cursor: pointer;
 }

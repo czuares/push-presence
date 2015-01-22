@@ -37,7 +37,7 @@ var onEvent = function(newState) {
   }
 
   model.subscriptions.forEach(function(sub) {
-    if(!sub.enabled){
+    if (!sub.enabled) {
       console.log('Device disabled', sub.device.name);
       return; //continue
     }
@@ -47,13 +47,13 @@ var onEvent = function(newState) {
 
     sub.timeframes.forEach(function(timeframe) {
       if (!isWithinRange(timeframe))
-        return;  //continue
+        return; //continue
 
       inRange = true;
       timeframe.events.forEach(function(evt) {
         if (!evt.subscribed) {
           console.log(evt.eventType + ' not subscribed');
-          return;  //continue
+          return; //continue
         }
 
         if (evt.eventType === newState) {
@@ -85,7 +85,7 @@ var handleEvent = function(sub, evt, showDesktopNotifications) {
     iconUrl: '../images/icon-128.png'
   };
 
-  if(showDesktopNotifications){
+  if (showDesktopNotifications) {
     chrome.notifications.create('id', opt, function(id) {
       console.log('Notification created ' + id + ' at ' + new Date());
     });

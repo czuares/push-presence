@@ -9,6 +9,8 @@
   <!-- bower:css -->
   <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
   <link rel="stylesheet" href="bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css" />
+  <link rel="stylesheet" href="bower_components/angular-xeditable/dist/css/xeditable.css" />
+  <link rel="stylesheet" href="bower_components/components-font-awesome/css/font-awesome.css" />
   <!-- endbower -->
   <!-- endbuild -->
 
@@ -18,13 +20,23 @@
 </head>
 
 <body ng-cloak ng-controller="PopupCtrl">
-  <div>
-    Enabled: <bs-switch ng-model="model.globalEnabled" type="checkbox"></bs-switch>
-  </div>
-  <div>
-    <button type="button" class="btn btn-default" aria-label="Options" ng-click="OpenOptions()">
-      <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-    </button>
+  <div class="container popup">
+    <div class="row">
+      <div class="col-xs-10">
+        Enabled:
+        <bs-switch ng-model="model.globalEnabled" type="checkbox"></bs-switch>
+      </div>
+      <div class="col-xs-2">
+        <button type="button" class="btn btn-default" aria-label="Options" ng-click="OpenOptions()">
+          <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+    <div>
+      <ul ng-repeat="s in model.subscriptions">
+        <li ng-bind="s.device.name"></li>
+      </ul>
+    </div>
   </div>
 
   <!-- build:js scripts/vendor.js -->
@@ -36,6 +48,7 @@
   <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
   <script src="bower_components/bootstrap-switch/dist/js/bootstrap-switch.js"></script>
   <script src="bower_components/angular-bootstrap-switch/dist/angular-bootstrap-switch.js"></script>
+  <script src="bower_components/angular-xeditable/dist/js/xeditable.js"></script>
   <!-- endbower -->
   <!-- endbuild -->
 

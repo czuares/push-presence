@@ -8,6 +8,8 @@
   <!-- bower:css -->
   <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
   <link rel="stylesheet" href="bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css" />
+  <link rel="stylesheet" href="bower_components/angular-xeditable/dist/css/xeditable.css" />
+  <link rel="stylesheet" href="bower_components/components-font-awesome/css/font-awesome.css" />
   <!-- endbower -->
   <!-- endbuild -->
   <!-- build:css styles/main.css -->
@@ -28,7 +30,7 @@
         </h1>
       </div>
       <div class="col-md-4">
-        <label>Enabled:
+        <label>Event Monitoring:
           <bs-switch ng-model="model.globalEnabled" type="checkbox"></bs-switch>
         </label>
         <span class="alert alert-warning" ng-if="!model.globalEnabled">
@@ -67,16 +69,25 @@
         </accordion>
       </div>
     </div>
-    <accordion class="subscriptions">
-      <accordion-group ng-repeat="s in model.subscriptions | orderBy:['-enabled','device.name']">
-        <accordion-heading>
-          <span ng-class="{'disabled' : !s.enabled, 'text-success': s.enabled }">
-            <i class="glyphicon glyphicon-{{ GetDeviceIcon(s) }}"></i> {{ GetDeviceName(s) }}
-          </span>
-        </accordion-heading>
-        <app-subscription data="s"></app-subscription>
-      </accordion-group>
-    </accordion>
+    <div class="row">
+      <div class="col-sm-6 col-md-4" ng-repeat="s in model.subscriptions | orderBy:device.name">
+        <div class="thumbnail device" ng-class="{'pb-green': DeviceActive(s), 'text-muted': !DeviceActive(s), 'text-primary': DeviceInactive(s)}" ng-click="SetActiveDevice(s)">
+          <button class="btn btn-xs btn-danger pull-right" ng-click="RemoveDevice(s, $event)">
+            <i class="fa fa-remove"></i>
+          </button>
+          <div class="text-center">
+            <i class="fa fa-{{ GetDeviceIcon(s) }} fa-5x"></i>
+            <div class="caption">
+              <h3 ng-bind="GetDeviceName(s)"></h3>
+              <p>
+                <bs-switch ng-model="s.enabled" type="checkbox"></bs-switch>
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <app-subscription ng-if="activeDevice && activeDevice.enabled" data="activeDevice"></app-subscription>
     <span ng-bind="saveStatus"></span>
   </div>
   <!-- build:js scripts/vendor.js -->
@@ -88,6 +99,7 @@
   <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
   <script src="bower_components/bootstrap-switch/dist/js/bootstrap-switch.js"></script>
   <script src="bower_components/angular-bootstrap-switch/dist/angular-bootstrap-switch.js"></script>
+  <script src="bower_components/angular-xeditable/dist/js/xeditable.js"></script>
   <!-- endbower -->
   <!-- endbuild -->
   <!-- build:js scripts/options.js -->

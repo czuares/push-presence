@@ -8,9 +8,6 @@
       <div class="col-md-6" ng-if="model.enabled">
         <h4>When to receive pushes:</h4>
       </div>
-      <div class="col-md-2">
-        <bs-switch ng-model="model.enabled" type="checkbox"></bs-switch>
-      </div>
     </div>
   </div>
   <div class="panel-body container">
@@ -89,7 +86,7 @@
   <div class="panel-footer">
     <div class="btn-group" role="group" ng-if="model.enabled">
       <button class="btn btn-default" ng-click="AddTimeframe()">Add Push Schedule</button>
-      <button class="btn btn-info" ng-disabled="!model.device.id" ng-click="TestPush(model.device.id)">Send test push</button>
+      <button class="btn btn-info" ng-disabled="$parent.online" ng-click="TestPush(model.device.id)">Send test push</button>
     </div>
   </div>
 </div>

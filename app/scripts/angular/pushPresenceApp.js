@@ -1,10 +1,11 @@
 'use strict';
 
-var pushPresenceApp = angular.module('pushPresenceApp', ['ui.bootstrap', 'frapontillo.bootstrap-switch']);
+var pushPresenceApp = angular.module('pushPresenceApp', ['ui.bootstrap', 'frapontillo.bootstrap-switch', 'xeditable']);
 
 pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
   function($scope, $window) {
 
+    $scope.activeDevice = null;
     $scope.online = navigator.onLine;
     $scope.DaysOfWeek = $window.DaysOfWeek;
 
@@ -49,29 +50,33 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
           return;
         }
 
-        var activeDevices =  _.where(res.devices, { active: true });
-        console.log('activeDevices',activeDevices);
+        var activeDevices = _.where(res.devices, {
+          active: true
+        });
+        console.log('activeDevices', activeDevices);
 
         var validSubscriptions = _.filter($scope.model.subscriptions,
-          function(sub){
+          function(sub) {
             //remove subs with devices missing/deactivated in PushBullet
-            return _.where(activeDevices, {iden: sub.device.id });
+            return _.where(activeDevices, {
+              iden: sub.device.id
+            });
           });
-          console.log('validSubscriptions',validSubscriptions);
+        console.log('validSubscriptions', validSubscriptions);
 
-          var newSubs = _.chain(activeDevices)
-          .filter(function(dev){
+        var newSubs = _.chain(activeDevices)
+          .filter(function(dev) {
             //filter out existing
-            return !_.some(validSubscriptions, function(sub){
+            return !_.some(validSubscriptions, function(sub) {
               return sub.device.id == dev.iden;
             });
-          }).map(function(data){
+          }).map(function(data) {
             return new Subscription(data);
           }).value();
-          console.log('newSubs', newSubs);
+        console.log('newSubs', newSubs);
 
         $scope.model.subscriptions = _.union(validSubscriptions, newSubs);
-        console.log('$scope.model.subscriptions',$scope.model.subscriptions);
+        console.log('$scope.model.subscriptions', $scope.model.subscriptions);
         saveModel();
       });
     };
@@ -137,6 +142,32 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
 
     init();
 
+    $scope.DeviceActive = function(sub){
+      return sub.device.id == $scope.activeDevice.device.id;
+    };
+    
+    $scope.DeviceInactive = function(sub){
+      return sub.enabled && !$scope.DeviceActive(sub);
+    };
+
+    $scope.RemoveDevice = function(sub, e) {
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      if (!window.confirm("This device will be removed. To re-add it, please refresh devices.\n\nWould you like to continue?"))
+        return false;
+
+      $scope.model.subscriptions = _.without($scope.model.subscriptions, sub);
+    };
+
+
+    $scope.SetActiveDevice = function(sub){
+      console.log('setting active device',sub);
+      $scope.activeDevice = sub;
+    };
+
     $scope.RevokeApiToken = function() {
       if (!$scope.ApiKeySet()) {
         return;
@@ -165,7 +196,7 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
         case 'chrome':
           return 'globe';
         default:
-          return 'phone';
+          return 'mobile';
           // case 'ios':
           // case 'iphone':
           // case 'android':

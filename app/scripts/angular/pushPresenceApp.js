@@ -1,11 +1,11 @@
 'use strict';
 
-var pushPresenceApp = angular.module('pushPresenceApp', ['ui.bootstrap', 'frapontillo.bootstrap-switch', 'xeditable']);
+var pushPresenceApp = angular.module('pushPresenceApp', ['ui.bootstrap', 'frapontillo.bootstrap-switch']);
 
 pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
   function($scope, $window) {
 
-    $scope.activeDevice = null;
+    $scope.debug = false;
     $scope.online = navigator.onLine;
     $scope.DaysOfWeek = $window.DaysOfWeek;
 
@@ -125,10 +125,11 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
     });
 
     $scope.$watch('model', function(newValue, oldValue) {
-      if (newValue === oldValue)
+      if (newValue == oldValue){
+        console.log('model is the same');
         return;
+      }
 
-      //hack for preventing model from saving on load
       if (initModel != null) {
         if (angular.equals(initModel, oldValue)) {
           initModel = null;
@@ -141,14 +142,6 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
     }, true);
 
     init();
-
-    $scope.DeviceActive = function(sub){
-      return sub.device.id == $scope.activeDevice.device.id;
-    };
-    
-    $scope.DeviceInactive = function(sub){
-      return sub.enabled && !$scope.DeviceActive(sub);
-    };
 
     $scope.RemoveDevice = function(sub, e) {
       if (e) {
@@ -164,8 +157,14 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
 
 
     $scope.SetActiveDevice = function(sub){
-      console.log('setting active device',sub);
-      $scope.activeDevice = sub;
+      if(sub.selected) return;
+
+      console.log('setting active device', sub);
+      sub.selected = true;
+      _.chain($scope.model.subscriptions).without(sub).each(function(item){
+        console.log('setting sub unselected',item);
+        item.selected = false;
+      });
     };
 
     $scope.RevokeApiToken = function() {
@@ -247,7 +246,11 @@ pushPresenceApp.directive('appSubscription', function() {
         $scope.model.timeframes.push(new Timeframe());
       };
 
-      $scope.RemoveTimeFrame = function(idx) {
+      $scope.RemoveTimeFrame = function(idx, e) {
+        if (e) {
+          e.preventDefault();
+          e.stopPropagation();
+        }
         console.log('index: ' + idx);
         $scope.model.timeframes.splice(idx, 1);
       };
@@ -273,13 +276,13 @@ pushPresenceApp.directive('appSubscription', function() {
         console.log(res);
       };
 
-      $scope.OnAllDayChanged = function(idx) {
-        console.log('Timeframe changed');
-        var timeframe = $scope.model.timeframes[idx];
-        if (timeframe.allDay) {
-          $scope.model.timeframes[idx] = new Timeframe();
-        }
-      };
+      // $scope.OnAllDayChanged = function(idx) {
+      //   console.log('Timeframe changed');
+      //   var timeframe = $scope.model.timeframes[idx];
+      //   if (timeframe.allDay) {
+      //     $scope.model.timeframes[idx] = new Timeframe();
+      //   }
+      // };
 
       $scope.GetPlaceHolderText = function(evt) {
         var title = capitalize(evt.eventType);

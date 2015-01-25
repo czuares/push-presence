@@ -37,6 +37,7 @@ function DataModel() {
 function Subscription(d) {
   this.device = new Device(d);
   this.enabled = true;
+  this.selected = false;
   this.timeframes = [new Timeframe()];
 }
 

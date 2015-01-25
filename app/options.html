@@ -8,7 +8,6 @@
   <!-- bower:css -->
   <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
   <link rel="stylesheet" href="bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css" />
-  <link rel="stylesheet" href="bower_components/angular-xeditable/dist/css/xeditable.css" />
   <link rel="stylesheet" href="bower_components/components-font-awesome/css/font-awesome.css" />
   <!-- endbower -->
   <!-- endbuild -->
@@ -18,10 +17,11 @@
 </head>
 
 <body ng-cloak ng-controller="OptionsCtrl">
-  <!-- <div>
+  <div ng-if="debug">
     {{ config | json }}
     <hr> {{ model | json }}
-  </div> -->
+    <hr> Online: {{online}}
+  </div>
   <div class="page-header">
     <div class="row">
       <div class="col-md-8">
@@ -71,11 +71,11 @@
     </div>
     <div class="row">
       <div class="col-sm-6 col-md-4" ng-repeat="s in model.subscriptions | orderBy:device.name">
-        <div class="thumbnail device" ng-class="{'pb-green': DeviceActive(s), 'text-muted': !DeviceActive(s), 'text-primary': DeviceInactive(s)}" ng-click="SetActiveDevice(s)">
+        <div class="thumbnail device" ng-class="{'active': s.selected, 'text-muted': !s.selected, 'text-primary': s.selected}" ng-click="SetActiveDevice(s)">
           <button class="btn btn-xs btn-danger pull-right" ng-click="RemoveDevice(s, $event)">
             <i class="fa fa-remove"></i>
           </button>
-          <div class="text-center">
+          <div class="text-center" ng-class="{'pb-green': s.selected && s.enabled}">
             <i class="fa fa-{{ GetDeviceIcon(s) }} fa-5x"></i>
             <div class="caption">
               <h3 ng-bind="GetDeviceName(s)"></h3>
@@ -87,7 +87,9 @@
         </div>
       </div>
     </div>
-    <app-subscription ng-if="activeDevice && activeDevice.enabled" data="activeDevice"></app-subscription>
+    <div ng-repeat="s in model.subscriptions">
+      <app-subscription ng-if="s.selected" data="s"></app-subscription>
+    </div>
     <span ng-bind="saveStatus"></span>
   </div>
   <!-- build:js scripts/vendor.js -->
@@ -99,7 +101,6 @@
   <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
   <script src="bower_components/bootstrap-switch/dist/js/bootstrap-switch.js"></script>
   <script src="bower_components/angular-bootstrap-switch/dist/angular-bootstrap-switch.js"></script>
-  <script src="bower_components/angular-xeditable/dist/js/xeditable.js"></script>
   <!-- endbower -->
   <!-- endbuild -->
   <!-- build:js scripts/options.js -->

@@ -1,92 +1,127 @@
-<div class="panel panel-default">
-  <!--  {{model | json}} -->
+<div class="panel panel-default" ng-if="model.enabled">
+  <div ng-if="$parent.debug" ng-bind="model | json"></div>
   <div class="panel-heading">
     <div class="row">
-      <div class="col-md-4" ng-if="model.enabled">
+      <div class="col-md-4">
         <h4>Events types to receive pushes for:</h4>
       </div>
-      <div class="col-md-6" ng-if="model.enabled">
+      <div class="col-md-6">
         <h4>When to receive pushes:</h4>
       </div>
     </div>
   </div>
-  <div class="panel-body container">
-    <div ng-if="model.enabled" class="row" ng-repeat="t in model.timeframes">
-      <div class="row">
-        <div class="col-md-12">
-          <div class="col-md-4">
-            <div class="input-group">
-              <input type="text" class="form-control" aria-label="Name" placeholder="Name" ng-model="t.name" />
-              <span class="input-group-btn">
-                <button class="btn btn-danger" type="button" ng-click="RemoveTimeFrame($index)" ng-disabled="model.timeframes.length === 1">Remove</button>
-              </span>
+  <div class="panel-body container timeframes">
+    <tabset>
+      <tab ng-repeat="t in model.timeframes">
+        <tab-heading ng-init="editable=false">
+            <input type="text" ng-readonly="!editable" ng-model="t.name"
+              placeholder="{{t.name || 'Schedule ' + ($index +1)}}" />
+            <span ng-click="editable=true" title="Click to edit">
+              <i class="fa fa-edit" ng-if="!editable"></i>
+            </span>
+            <span ng-click="editable=false">
+              <i class="fa fa-check" ng-if="editable"></i>
+            </span>
+            <button class="btn btn-xs btn-danger pull-right"
+              ng-click="RemoveTimeFrame($index, $event)"
+              ng-disabled="model.timeframes.length === 1">
+              <i class="fa fa-remove"></i>
+            </button>
+            <!--<span ng-if="!editable" ng-bind="t.name || 'Schedule ' + ($index +1)"></span>
+            <input type="text" ng-show="editable" class="ng-hide" ng-blur="editable=false" ng-model="t.name" />
+            <span ng-click="editable=true" title="Click to edit">
+            <i class="fa fa-edit" ng-if="!editable"></i>
+          </span>
+          <span ng-click="editable=false">
+          <i class="fa fa-check" ng-if="editable"></i>
+        </span>
+        <button class="btn btn-xs btn-danger pull-right"
+        ng-click="RemoveTimeFrame($index, $event)"
+        ng-disabled="model.timeframes.length === 1">
+        <i class="fa fa-remove"></i>
+      </button>-->
+          <!-- <span ng-init="editable=false;tempName=t.name">
+            <span ng-if="!editable" ng-bind="t.name || 'Schedule ' + ($index +1)"></span>
+            <input type="text" ng-if="editable" ng-blur="editable=false" ng-model="tempName" />
+            <span ng-click="editable=true">
+              <i class="fa fa-edit" ng-if="!editable"></i>
+            </span>
+            <span ng-click="t.name=tempName;editable=false;"><i class="fa fa-check" ng-if="editable"></i>
+            </span>
+            <span ng-click="editable=false">
+              <i class="fa fa-close" ng-if="editable"></i>
+            </span>
+            <button class="btn btn-xs btn-danger pull-right" ng-click="RemoveTimeFrame($index, $event)" ng-disabled="model.timeframes.length === 1">
+              <i class="fa fa-remove"></i>
+            </button>
+          </span> -->
+        </tab-heading>
+        <div class="row">
+          <div class="col-md-12">
+            <div class="col-md-2 col-md-offset-4">
+              <label class="checkbox">
+                <input type="checkbox" ng-model="t.allDay" />{{ GetScheduleName(t) }}
+              </label>
+            </div>
+            <div class="col-md-5">
+              <p class="help-block" ng-if="t.allDay">
+                Receive push notifications every day at all times of day (uncheck for more granular control).
+              </p>
             </div>
           </div>
-          <div class="col-md-2">
-            <label class="checkbox">
-              <input type="checkbox" ng-model="t.allDay" ng-change="OnAllDayChanged($index)" />{{ GetScheduleName(t) }}
-            </label>
-          </div>
-          <div class="col-md-5">
-            <p class="help-block" ng-if="t.allDay">
-              Receive push notifications every day at all times of day (uncheck for more granular control).
-            </p>
-          </div>
         </div>
-      </div>
-      <div class="col-md-4">
-        <div ng-repeat="e in t.events" ng-init="title=(e.eventType | capitalize)">
-          <!--     {{e | json }} -->
-          <div class="input-group">
-            <span class="input-group-addon">
-              <input type="checkbox" aria-label="{{title}}" ng-model="e.subscribed">
-            </span>
-            <input type="text" class="form-control" aria-label="Message" ng-disabled="!e.subscribed" placeholder="{{title}}" ng-model="e.customMessage" />
+        <div class="col-md-4">
+          <div ng-repeat="e in t.events" ng-init="title=(e.eventType | capitalize)">
+            <div class="input-group">
+              <span class="input-group-addon">
+                <input type="checkbox" aria-label="{{title}}" ng-model="e.subscribed">
+              </span>
+              <input type="text" class="form-control" aria-label="Message" ng-disabled="!e.subscribed" placeholder="{{title}}" ng-model="e.customMessage" />
+            </div>
           </div>
+          <p class="help-block">
+            Check the box next to the event you would like to receive pushes for. Optionally customize the message in each of the text boxes.
+          </p>
         </div>
-        <p class="help-block">
-          Check the box next to the event you would like to receive pushes for. Optionally customize the message in each of the text boxes.
-        </p>
-      </div>
-      <div class="col-md-8">
-        <div ng-if="!t.allDay">
-          <div class="row">
-            <div class="col-md-11 col-md-offset-1">
-              <div class="btn-group" ng-repeat="d in t.days">
-                <label class="btn btn-default" ng-model="d.enabled" btn-checkbox>{{DayName(d) | capitalize}}</label>
+        <div class="col-md-8">
+          <div ng-if="!t.allDay">
+            <div class="row">
+              <div class="col-md-11 col-md-offset-1">
+                <div class="btn-group" ng-repeat="d in t.days">
+                  <label class="btn btn-default" ng-model="d.enabled" btn-checkbox>{{DayName(d) | capitalize}}</label>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <label>From:
+                  <timepicker ng-model="t.begin" isodatestring></timepicker>
+                </label>
+              </div>
+              <div class="col-md-6">
+                <label>To:
+                  <timepicker ng-model="t.end" isodatestring></timepicker>
+                </label>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-md-6">
+                <label class="checkbox">
+                  <input type="checkbox" ng-model="t.invert" />Invert</label>
               </div>
             </div>
           </div>
-          <div class="row">
-            <div class="col-md-6">
-              <label>From:
-                <timepicker ng-model="t.begin" isodatestring></timepicker>
-              </label>
-            </div>
-            <div class="col-md-6">
-              <label>To:
-                <timepicker ng-model="t.end" isodatestring></timepicker>
-              </label>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-md-6">
-              <label class="checkbox">
-                <input type="checkbox" ng-model="t.invert" />Invert</label>
-            </div>
-          </div>
         </div>
-      </div>
-      <hr class="col-md-10" ng-if="!$last" />
-    </div>
-    <div ng-if="!model.enabled" class="help-block">
-      Device is disabled. You will not receive any pushes on this device.
-    </div>
+      </tab>
+    </tabset>
   </div>
   <div class="panel-footer">
-    <div class="btn-group" role="group" ng-if="model.enabled">
+    <div class="btn-group" role="group">
       <button class="btn btn-default" ng-click="AddTimeframe()">Add Push Schedule</button>
-      <button class="btn btn-info" ng-disabled="$parent.online" ng-click="TestPush(model.device.id)">Send test push</button>
+      <button class="btn btn-info" ng-disabled="!$parent.online" ng-click="TestPush(model.device.id)">Send test push</button>
     </div>
   </div>
+</div>
+<div ng-if="!model.enabled" class="device-disabled bg-warning text-warning">
+  Device is disabled. You will not receive any pushes on this device.
 </div>

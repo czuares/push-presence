@@ -7,7 +7,7 @@
 // use this if you want to recursively match all subfolders:
 // 'test/spec/**/*.js'
 
-module.exports = function (grunt) {
+module.exports = function(grunt) {
 
   // Load grunt tasks automatically
   require('load-grunt-tasks')(grunt);
@@ -35,35 +35,35 @@ module.exports = function (grunt) {
         tasks: ['bowerInstall']
       },
       js: {
-      files: ['<%= config.app %>/scripts/{,*/}*.js'],
-      tasks: ['jshint'],
-      options: {
-        livereload: true
+        files: ['<%= config.app %>/scripts/{,*/}*.js'],
+        tasks: ['jshint'],
+        options: {
+          livereload: true
+        }
+      },
+      gruntfile: {
+        files: ['Gruntfile.js']
+      },
+      styles: {
+        files: ['<%= config.app %>/styles/{,*/}*.css'],
+        tasks: [],
+        options: {
+          livereload: true
+        }
+      },
+      livereload: {
+        options: {
+          livereload: '<%= connect.options.livereload %>'
+        },
+        files: [
+          '.tmp/styles/{,*/}*.css',
+          '<%= config.app %>/*.html',
+          '<%= config.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
+          '<%= config.app %>/manifest.json',
+          '<%= config.app %>/_locales/{,*/}*.json'
+        ]
       }
     },
-    gruntfile: {
-      files: ['Gruntfile.js']
-    },
-    styles: {
-    files: ['<%= config.app %>/styles/{,*/}*.css'],
-    tasks: [],
-    options: {
-      livereload: true
-    }
-  },
-  livereload: {
-    options: {
-      livereload: '<%= connect.options.livereload %>'
-    },
-    files: [
-  '.tmp/styles/{,*/}*.css',
-  '<%= config.app %>/*.html',
-'<%= config.app %>/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
-'<%= config.app %>/manifest.json',
-'<%= config.app %>/_locales/{,*/}*.json'
-]
-}
-},
 
     // Grunt server and debug server settings
     connect: {
@@ -78,9 +78,9 @@ module.exports = function (grunt) {
         options: {
           middleware: function(connect) {
             return [
-            connect.static('.tmp'),
-            connect().use('/bower_components', connect.static('./bower_components')),
-            connect.static(config.app)
+              connect.static('.tmp'),
+              connect().use('/bower_components', connect.static('./bower_components')),
+              connect.static(config.app)
             ];
           }
         }
@@ -89,7 +89,7 @@ module.exports = function (grunt) {
         options: {
           open: false,
           base: [
-          '<%= config.app %>'
+            '<%= config.app %>'
           ]
         }
       },
@@ -97,8 +97,8 @@ module.exports = function (grunt) {
         options: {
           open: false,
           base: [
-          'test',
-          '<%= config.app %>'
+            'test',
+            '<%= config.app %>'
           ]
         }
       }
@@ -112,9 +112,9 @@ module.exports = function (grunt) {
         files: [{
           dot: true,
           src: [
-          '.tmp',
-          '<%= config.dist %>/*',
-          '!<%= config.dist %>/.git*'
+            '.tmp',
+            '<%= config.dist %>/*',
+            '!<%= config.dist %>/.git*'
           ]
         }]
       }
@@ -127,12 +127,12 @@ module.exports = function (grunt) {
         reporter: require('jshint-stylish')
       },
       all: [
-      'Gruntfile.js',
-    '<%= config.app %>/scripts/{,*/}*.js',
-    '!<%= config.app %>/scripts/vendor/*',
-  'test/spec/{,*/}*.js'
-  ]
-},
+        'Gruntfile.js',
+        '<%= config.app %>/scripts/{,*/}*.js',
+        '!<%= config.app %>/scripts/vendor/*',
+        'test/spec/{,*/}*.js'
+      ]
+    },
 
     // Mocha testing framework configuration options
     mocha: {
@@ -147,7 +147,7 @@ module.exports = function (grunt) {
     // Automatically inject Bower components into the HTML file
     bowerInstall: {
       app: {
-        src: ['<%= config.app %>/options.html','<%= config.app %>/popup.html'],
+        src: ['<%= config.app %>/options.html', '<%= config.app %>/popup.html'],
         ignorePath: '<%= config.app %>/'
       }
     },
@@ -167,8 +167,8 @@ module.exports = function (grunt) {
         dest: '<%= config.dist %>'
       },
       html: [
-      '<%= config.app %>/options.html',
-      '<%= config.app %>/popup.html'
+        '<%= config.app %>/options.html',
+        '<%= config.app %>/popup.html'
       ]
     },
 
@@ -177,9 +177,9 @@ module.exports = function (grunt) {
       options: {
         assetsDirs: ['<%= config.dist %>', '<%= config.dist %>/images']
       },
-    html: ['<%= config.dist %>/{,*/}*.html'],
-  css: ['<%= config.dist %>/styles/{,*/}*.css']
-},
+      html: ['<%= config.dist %>/{,*/}*.html'],
+      css: ['<%= config.dist %>/styles/{,*/}*.css']
+    },
 
     // The following *-min tasks produce minified files in the dist folder
     imagemin: {
@@ -187,58 +187,58 @@ module.exports = function (grunt) {
         files: [{
           expand: true,
           cwd: '<%= config.app %>/images',
-        src: '{,*/}*.{gif,jpeg,jpg,png}',
-        dest: '<%= config.dist %>/images'
-      }]
-    }
-  },
-
-  svgmin: {
-    dist: {
-      files: [{
-        expand: true,
-        cwd: '<%= config.app %>/images',
-      src: '{,*/}*.svg',
-      dest: '<%= config.dist %>/images'
-    }]
-  }
-},
-
-htmlmin: {
-  dist: {
-    options: {
-      customAttrAssign: [/\?=/],
-      collapseBooleanAttributes: true,
-      collapseWhitespace: true,
-      removeAttributeQuotes: true,
-      removeCommentsFromCDATA: true,
-      removeEmptyAttributes: true,
-      removeOptionalTags: true,
-      removeRedundantAttributes: true,
-      useShortDoctype: true
+          src: '{,*/}*.{gif,jpeg,jpg,png}',
+          dest: '<%= config.dist %>/images'
+        }]
+      }
     },
-    files: [{
-      expand: true,
-      cwd: '<%= config.dist %>',
-    src: '{,*/}*.html',
-    dest: '<%= config.dist %>'
-  }]
-}
-},
 
-// By default, your `options.html`'s <!-- Usemin block --> will take care of
+    svgmin: {
+      dist: {
+        files: [{
+          expand: true,
+          cwd: '<%= config.app %>/images',
+          src: '{,*/}*.svg',
+          dest: '<%= config.dist %>/images'
+        }]
+      }
+    },
+
+    htmlmin: {
+      dist: {
+        options: {
+          customAttrAssign: [/\?=/],
+          collapseBooleanAttributes: true,
+          collapseWhitespace: true,
+          removeAttributeQuotes: true,
+          removeCommentsFromCDATA: true,
+          removeEmptyAttributes: true,
+          removeOptionalTags: true,
+          removeRedundantAttributes: true,
+          useShortDoctype: true
+        },
+        files: [{
+          expand: true,
+          cwd: '<%= config.dist %>',
+          src: '{,*/}*.html',
+          dest: '<%= config.dist %>'
+        }]
+      }
+    },
+
+    // By default, your `options.html`'s <!-- Usemin block --> will take care of
     // minification. These next options are pre-configured if you do not wish
     // to use the Usemin blocks.
     cssmin: {
       dist: {
         files: {
           '<%= config.dist %>/styles/main.css': [
-        '.tmp/styles/{,*/}*.css',
-      '<%= config.app %>/styles/{,*/}*.css'
-      ]
-    }
-  }
-},
+            '.tmp/styles/{,*/}*.css',
+            '<%= config.app %>/styles/{,*/}*.css'
+          ]
+        }
+      }
+    },
     // uglify: {
     //   dist: {
     //     files: {
@@ -256,51 +256,52 @@ htmlmin: {
     copy: {
       dist: {
         files: [{
-          expand: true,
-          dot: true,
-          cwd: '<%= config.app %>',
-          dest: '<%= config.dist %>',
-          src: [
-          '*.{ico,png,txt}',
-        'images/{,*/}*.{webp,gif}',
-      '{,*/}*.html',
-    'styles/fonts/{,*/}*.*',
-  '_locales/{,*/}*.json',
-  ]
-},
-        //https://stackoverflow.com/questions/21932451/assets-missing-in-angular-application-built-using-grunt
-        {
-          expand: true,
-          flatten: true,
-          cwd: '<%= config.app %>',
-          dest: '<%= config.dist %>/fonts',
-          src: ['bower_components/bootstrap/fonts/*.*']
-        }]
+            expand: true,
+            dot: true,
+            cwd: '<%= config.app %>',
+            dest: '<%= config.dist %>',
+            src: [
+              '*.{ico,png,txt}',
+              'images/{,*/}*.{webp,gif}',
+              '{,*/}*.html',
+              'styles/fonts/{,*/}*.*',
+              '_locales/{,*/}*.json',
+            ]
+          },
+          //https://stackoverflow.com/questions/21932451/assets-missing-in-angular-application-built-using-grunt
+          {
+            expand: true,
+            flatten: true,
+            cwd: '<%= config.app %>',
+            dest: '<%= config.dist %>/fonts',
+            src: ['bower_components/bootstrap/fonts/*.*']
+          }
+        ]
       },
       styles: {
         expand: true,
         dot: true,
         cwd: '<%= config.app %>/styles',
         dest: '.tmp/styles/',
-      src: '{,*/}*.css'
-    }
-  },
+        src: '{,*/}*.css'
+      }
+    },
 
     // Run some tasks in parallel to speed up build process
     concurrent: {
       server: [
-      'copy:styles'
+        'copy:styles'
       ],
       chrome: [
-      'copy:styles'
+        'copy:styles'
       ],
       dist: [
-      'copy:styles',
-      'imagemin',
-      'svgmin'
+        'copy:styles',
+        'imagemin',
+        'svgmin'
       ],
       test: [
-      'copy:styles'
+        'copy:styles'
       ],
     },
 
@@ -312,7 +313,7 @@ htmlmin: {
           background: {
             target: 'scripts/background.js',
             exclude: [
-            'scripts/chromereload.js'
+              'scripts/chromereload.js'
             ]
           }
         },
@@ -340,9 +341,9 @@ htmlmin: {
     }
   });
 
-grunt.registerTask('debug', function (platform) {
-  var watch = grunt.config('watch');
-  platform = platform || 'chrome';
+  grunt.registerTask('debug', function(platform) {
+    var watch = grunt.config('watch');
+    platform = platform || 'chrome';
 
 
     // Configure style task for debug:server task
@@ -360,32 +361,32 @@ grunt.registerTask('debug', function (platform) {
       'concurrent:' + platform,
       'connect:' + platform,
       'watch'
-      ]);
+    ]);
   });
 
-grunt.registerTask('test', [
-  'connect:test',
-  'mocha'
+  grunt.registerTask('test', [
+    'connect:test',
+    'mocha'
   ]);
 
-grunt.registerTask('build', [
-  'clean:dist',
-  'chromeManifest:dist',
-  'useminPrepare',
-  'concurrent:dist',
-  'concat',
-  'cssmin',
-  'uglify',
-  'copy',
+  grunt.registerTask('build', [
+    'clean:dist',
+    'chromeManifest:dist',
+    'useminPrepare',
+    'concurrent:dist',
+    'concat',
+    'cssmin',
+    'uglify',
+    'copy',
     //'removelogging',
     'usemin',
     'htmlmin',
     'compress'
-    ]);
+  ]);
 
-grunt.registerTask('default', [
-  'newer:jshint',
-  'test',
-  'build'
+  grunt.registerTask('default', [
+    'newer:jshint',
+    'test',
+    'build'
   ]);
 };

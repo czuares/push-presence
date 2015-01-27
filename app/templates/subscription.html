@@ -14,48 +14,40 @@
     <tabset>
       <tab ng-repeat="t in model.timeframes">
         <tab-heading ng-init="editable=false">
-            <input type="text" ng-readonly="!editable" ng-model="t.name"
+          <!-- <input type="text" ng-readonly="!editable" ng-model="t.name"
               placeholder="{{t.name || 'Schedule ' + ($index +1)}}" />
             <span ng-click="editable=true" title="Click to edit">
               <i class="fa fa-edit" ng-if="!editable"></i>
             </span>
             <span ng-click="editable=false">
               <i class="fa fa-check" ng-if="editable"></i>
-            </span>
-            <button class="btn btn-xs btn-danger pull-right"
-              ng-click="RemoveTimeFrame($index, $event)"
-              ng-disabled="model.timeframes.length === 1">
-              <i class="fa fa-remove"></i>
-            </button>
-            <!--<span ng-if="!editable" ng-bind="t.name || 'Schedule ' + ($index +1)"></span>
-            <input type="text" ng-show="editable" class="ng-hide" ng-blur="editable=false" ng-model="t.name" />
-            <span ng-click="editable=true" title="Click to edit">
+            </span>-->
+          <!-- <span ng-if="!editable" ng-bind="t.name || 'Schedule ' + ($index +1)"></span>
+          <input type="text" ng-if="editable" class="ng-hide" ng-blur="editable=false" ng-model="t.name" />
+          <span ng-click="editable=true" title="Click to edit">
             <i class="fa fa-edit" ng-if="!editable"></i>
           </span>
           <span ng-click="editable=false">
-          <i class="fa fa-check" ng-if="editable"></i>
-        </span>
-        <button class="btn btn-xs btn-danger pull-right"
-        ng-click="RemoveTimeFrame($index, $event)"
-        ng-disabled="model.timeframes.length === 1">
-        <i class="fa fa-remove"></i>
-      </button>-->
-          <!-- <span ng-init="editable=false;tempName=t.name">
-            <span ng-if="!editable" ng-bind="t.name || 'Schedule ' + ($index +1)"></span>
-            <input type="text" ng-if="editable" ng-blur="editable=false" ng-model="tempName" />
-            <span ng-click="editable=true">
+            <i class="fa fa-check" ng-if="editable"></i>
+          </span> -->
+          <span ng-init="editable=false;tempName=t.name;">
+            <span ng-show="!editable" ng-dblclick="editable=true" ng-bind="t.name || 'Schedule ' + ($index +1)"></span>
+            <input type="text" ng-show="editable" ng-model="tempName" placeholder="{{'Schedule ' + ($index +1)}}" focus-me="{{editable}}" />
+            <span ng-click="editable=true" title="Edit Name">
               <i class="fa fa-edit" ng-if="!editable"></i>
             </span>
-            <span ng-click="t.name=tempName;editable=false;"><i class="fa fa-check" ng-if="editable"></i>
+            <span ng-click="t.name=tempName;editable=false;" title="Save">
+              <i class="fa fa-check" ng-if="editable"></i>
             </span>
-            <span ng-click="editable=false">
+            <span ng-click="editable=false" title="Cancel">
               <i class="fa fa-close" ng-if="editable"></i>
             </span>
-            <button class="btn btn-xs btn-danger pull-right" ng-click="RemoveTimeFrame($index, $event)" ng-disabled="model.timeframes.length === 1">
-              <i class="fa fa-remove"></i>
-            </button>
-          </span> -->
+          </span>
+          <button class="btn btn-xs btn-danger pull-right" ng-click="RemoveTimeFrame($index, $event)" ng-disabled="model.timeframes.length === 1">
+            <i class="fa fa-remove"></i>
+          </button>
         </tab-heading>
+        <!-- {{t | json }} -->
         <div class="row">
           <div class="col-md-12">
             <div class="col-md-2 col-md-offset-4">

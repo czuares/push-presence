@@ -13,10 +13,12 @@
   <!-- endbuild -->
   <!-- build:css styles/main.css -->
   <link rel="stylesheet" href="styles/main.css">
+  <link rel="stylesheet" href="styles/angular.css">
   <!-- endbuild -->
 </head>
 
 <body ng-cloak ng-controller="OptionsCtrl">
+  <button class="btn btn-primary" ng-class="{active: debug}" ng-click="debug=!debug">Debug</button>
   <div ng-if="debug">
     {{ config | json }}
     <hr> {{ model | json }}
@@ -70,7 +72,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-sm-6 col-md-4" ng-repeat="s in model.subscriptions | orderBy:device.name">
+      <div class="col-sm-6 col-md-4" ng-repeat="s in model.subscriptions | orderBy:['device.name']">
         <div class="thumbnail device" ng-class="{'active': s.selected, 'text-muted': !s.selected, 'text-primary': s.selected}" ng-click="SetActiveDevice(s)">
           <button class="btn btn-xs btn-danger pull-right" ng-click="RemoveDevice(s, $event)">
             <i class="fa fa-remove"></i>

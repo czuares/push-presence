@@ -13,96 +13,74 @@
   <div class="panel-body container timeframes">
     <tabset>
       <tab ng-repeat="t in model.timeframes">
-        <tab-heading ng-init="editable=false">
-          <!-- <input type="text" ng-readonly="!editable" ng-model="t.name"
-              placeholder="{{t.name || 'Schedule ' + ($index +1)}}" />
-            <span ng-click="editable=true" title="Click to edit">
-              <i class="fa fa-edit" ng-if="!editable"></i>
-            </span>
-            <span ng-click="editable=false">
-              <i class="fa fa-check" ng-if="editable"></i>
-            </span>-->
-          <!-- <span ng-if="!editable" ng-bind="t.name || 'Schedule ' + ($index +1)"></span>
-          <input type="text" ng-if="editable" class="ng-hide" ng-blur="editable=false" ng-model="t.name" />
-          <span ng-click="editable=true" title="Click to edit">
+        <tab-heading>
+        <span ng-init="editable=false;tempName=t.name;">
+          <span ng-show="!editable" ng-dblclick="editable=true" ng-bind="t.name || 'Schedule ' + ($index +1)"></span>
+          <input type="text" ng-show="editable" ng-model="tempName" placeholder="{{'Schedule ' + ($index +1)}}" focus-me="{{editable}}" />
+          <span ng-click="editable=true" title="Edit Name">
             <i class="fa fa-edit" ng-if="!editable"></i>
           </span>
-          <span ng-click="editable=false">
+          <span ng-click="t.name=tempName;editable=false;" title="Save">
             <i class="fa fa-check" ng-if="editable"></i>
-          </span> -->
-          <span ng-init="editable=false;tempName=t.name;">
-            <span ng-show="!editable" ng-dblclick="editable=true" ng-bind="t.name || 'Schedule ' + ($index +1)"></span>
-            <input type="text" ng-show="editable" ng-model="tempName" placeholder="{{'Schedule ' + ($index +1)}}" focus-me="{{editable}}" />
-            <span ng-click="editable=true" title="Edit Name">
-              <i class="fa fa-edit" ng-if="!editable"></i>
-            </span>
-            <span ng-click="t.name=tempName;editable=false;" title="Save">
-              <i class="fa fa-check" ng-if="editable"></i>
-            </span>
-            <span ng-click="editable=false" title="Cancel">
-              <i class="fa fa-close" ng-if="editable"></i>
-            </span>
           </span>
-          <button class="btn btn-xs btn-danger pull-right" ng-click="RemoveTimeFrame($index, $event)" ng-disabled="model.timeframes.length === 1">
-            <i class="fa fa-remove"></i>
-          </button>
-        </tab-heading>
-        <!-- {{t | json }} -->
-        <div class="row">
-          <div class="col-md-12">
-            <div class="col-md-2 col-md-offset-4">
-              <label class="checkbox">
-                <input type="checkbox" ng-model="t.allDay" />{{ GetScheduleName(t) }}
+          <span ng-click="editable=false" title="Cancel">
+            <i class="fa fa-close" ng-if="editable"></i>
+          </span>
+        </span>
+        <button class="btn btn-xs btn-danger pull-right" ng-click="RemoveTimeFrame($index, $event)" ng-disabled="model.timeframes.length === 1" title="Remove Schedule">
+          <i class="fa fa-remove"></i>
+        </button>
+      </tab-heading>
+      <!-- {{t | json }} -->
+      <div class="row">
+        <div class="col-md-12">
+          <div class="col-md-2 col-md-offset-4">
+            <label class="checkbox">
+              <input type="checkbox" ng-model="t.allDay" />{{ GetScheduleName(t) }}
+            </label>
+          </div>
+          <div class="col-md-5">
+            <p class="help-block" ng-if="t.allDay">
+              Receive push notifications every day at all times of day (uncheck for more granular control).
+            </p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div ng-repeat="e in t.events" ng-init="title=(e.eventType | capitalize)">
+          <div class="input-group">
+            <span class="input-group-addon">
+              <input type="checkbox" aria-label="{{title}}" ng-model="e.subscribed">
+            </span>
+            <input type="text" class="form-control" aria-label="Message" ng-disabled="!e.subscribed" placeholder="{{title}}" ng-model="e.customMessage" />
+          </div>
+        </div>
+        <p class="help-block">
+          Check the box next to the event you would like to receive pushes for. Optionally customize the message in each of the text boxes.
+        </p>
+      </div>
+      <div class="col-md-8">
+        <div ng-if="!t.allDay">
+          <div class="row">
+            <div class="col-md-11 col-md-offset-1">
+              <div class="btn-group" ng-repeat="d in t.days">
+                <label class="btn btn-default" ng-model="d.enabled" btn-checkbox>{{DayName(d) | capitalize}}</label>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-6">
+              <label>From:
+                <timepicker ng-model="t.begin" isodatestring></timepicker>
               </label>
             </div>
-            <div class="col-md-5">
-              <p class="help-block" ng-if="t.allDay">
-                Receive push notifications every day at all times of day (uncheck for more granular control).
-              </p>
+            <div class="col-md-6">
+              <label>To:
+                <timepicker ng-model="t.end" isodatestring></timepicker>
+              </label>
             </div>
           </div>
         </div>
-        <div class="col-md-4">
-          <div ng-repeat="e in t.events" ng-init="title=(e.eventType | capitalize)">
-            <div class="input-group">
-              <span class="input-group-addon">
-                <input type="checkbox" aria-label="{{title}}" ng-model="e.subscribed">
-              </span>
-              <input type="text" class="form-control" aria-label="Message" ng-disabled="!e.subscribed" placeholder="{{title}}" ng-model="e.customMessage" />
-            </div>
-          </div>
-          <p class="help-block">
-            Check the box next to the event you would like to receive pushes for. Optionally customize the message in each of the text boxes.
-          </p>
-        </div>
-        <div class="col-md-8">
-          <div ng-if="!t.allDay">
-            <div class="row">
-              <div class="col-md-11 col-md-offset-1">
-                <div class="btn-group" ng-repeat="d in t.days">
-                  <label class="btn btn-default" ng-model="d.enabled" btn-checkbox>{{DayName(d) | capitalize}}</label>
-                </div>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6">
-                <label>From:
-                  <timepicker ng-model="t.begin" isodatestring></timepicker>
-                </label>
-              </div>
-              <div class="col-md-6">
-                <label>To:
-                  <timepicker ng-model="t.end" isodatestring></timepicker>
-                </label>
-              </div>
-            </div>
-            <div class="row">
-              <div class="col-md-6">
-                <label class="checkbox">
-                  <input type="checkbox" ng-model="t.invert" />Invert</label>
-              </div>
-            </div>
-          </div>
         </div>
       </tab>
     </tabset>

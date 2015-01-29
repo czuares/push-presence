@@ -48,3 +48,8 @@ accordion a.accordion-toggle:hover, accordion a.accordion-toggle:focus {
 div.timeframes tab-heading .btn-danger {
   margin-left: 10px;
 }
+
+.timeframes .name {
+  border-bottom: dotted 2px;
+  cursor: pointer;
+}

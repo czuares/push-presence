@@ -15,15 +15,12 @@
       <tab ng-repeat="t in model.timeframes">
         <tab-heading>
         <span ng-init="editable=false;tempName=t.name;">
-          <span ng-show="!editable" ng-dblclick="editable=true" ng-bind="t.name || 'Schedule ' + ($index +1)"></span>
-          <input type="text" ng-show="editable" ng-model="tempName" placeholder="{{'Schedule ' + ($index +1)}}" focus-me="{{editable}}" />
-          <span ng-click="editable=true" title="Edit Name">
-            <i class="fa fa-edit" ng-if="!editable"></i>
-          </span>
-          <span ng-click="t.name=tempName;editable=false;" title="Save">
+          <span ng-show="!editable" class="name" title="Double-click to edit name" ng-dblclick="editable=true" ng-bind="t.name || 'Schedule ' + ($index +1)"></span>
+          <input type="text" ng-show="editable" ng-blur="t.name=tempName;editable=false;" ng-model="tempName" placeholder="{{'Schedule ' + ($index +1)}}" focus-me="{{editable}}" />
+          <span ng-click="t.name=tempName;editable=false;" title="Save" class="text-success">
             <i class="fa fa-check" ng-if="editable"></i>
           </span>
-          <span ng-click="editable=false" title="Cancel">
+          <span ng-click="editable=false" title="Cancel" class="text-warning">
             <i class="fa fa-close" ng-if="editable"></i>
           </span>
         </span>

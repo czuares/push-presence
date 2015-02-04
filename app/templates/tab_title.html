@@ -1,0 +1,15 @@
+<span class="clickable">
+  <span ng-show="!editable" class="editable" title="Double-click to edit" ng-dblclick="SetEditable(true)" ng-mouseover="ShowEdit(true)" ng-mouseleave="ShowEdit(false)">
+  {{ model || GetPlaceHolder() }}
+    <span ng-click="SetEditable(true)" title="Click to edit">
+      <i class="fa fa-edit text-info" ng-if="showEdit"></i>
+    </span>
+  </span>
+  <input type="text" ng-show="editable" ng-keyup="KeyUp($event)" ng-blur="CancelEdit()" ng-model="tempName" placeholder="{{ GetPlaceHolder($index) }}" focus-me="{{editable}}" />
+  <span ng-mousedown="Save()" title="Save" class="text-success">
+    <i class="fa fa-save" ng-if="editable"></i>
+  </span>
+  <span ng-click="CancelEdit()" title="Cancel" class="text-danger">
+    <i class="fa fa-undo" ng-if="editable"></i>
+  </span>
+</span>

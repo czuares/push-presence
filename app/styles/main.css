@@ -30,11 +30,21 @@ div.timeframes tab-heading .btn-danger {
   margin-left: 10px;
 }
 
-.timeframes .name {
+.editable {
   border-bottom: dotted 2px;
   cursor: pointer;
 }
 
 .padded {
   padding:15px;
+}
+
+div.device .btn-danger{
+  position: absolute;
+  top: 5px;
+  right: 20px;
+}
+
+.clickable {
+  cursor: pointer;
 }

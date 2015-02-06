@@ -32,6 +32,7 @@ function DataModel() {
   this.globalEnabled = true;
   this.showDesktopNotifications = true;
   this.hideDisabled = false;
+  this.wakeUpDelay = 0; //TODO: implement
 }
 
 function Subscription(d) {

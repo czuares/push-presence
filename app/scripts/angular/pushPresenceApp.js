@@ -1,13 +1,19 @@
 'use strict';
-var pushPresenceApp = angular.module('pushPresenceApp', ['ui.bootstrap', 'frapontillo.bootstrap-switch']);
-pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
-    function($scope, $window) {
+var pushPresenceApp = angular.module('pushPresenceApp', ['ui.bootstrap', 'frapontillo.bootstrap-switch', 'ngAside', 'toastr']);
+pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window', '$timeout', '$aside', 'toastr',
+    function($scope, $window, $timeout, $aside, toastr) {
         $scope.debug = false;
         $scope.online = navigator.onLine;
         $scope.DaysOfWeek = $window.DaysOfWeek;
         var initModel = new DataModel();
         $scope.model = angular.copy(initModel);
         $scope.config = new ConfigurationModel();
+        /**********************
+          Private methods 
+         **********************/
+        var apiKeySet = function() {
+            return $scope.config.pushBulletApiToken.length == 32;
+        };
         var init = function() {
             chrome.storage.sync.get($scope.config, function(items) {
                 console.log('Binding config from synced storage');
@@ -21,7 +27,17 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
                 $scope.$apply();
             });
         };
+        var openSettingsAsideIfNeeded = function() {
+            $timeout(function() {
+                if (!apiKeySet()) {
+                    $scope.OpenConfig();
+                }
+            }, 100);
+        };
         var onlineStateChanged = function(online) {
+            if (!online) {
+                toastr.error('Your computer is not connected to the internet right now. No pushes are going to be sent.', 'Warning');
+            }
             $scope.$apply(function() {
                 console.log((online ? 'on' : 'off') + 'line at ' + new Date());
                 $scope.online = online;
@@ -79,15 +95,14 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
         }
         var saveModel = function() {
             chrome.storage.local.set($scope.model, function() {
-                $scope.saveStatus = 'Saved';
-                $window.setTimeout(function() {
-                    $scope.saveStatus = '';
-                    $scope.$apply();
-                }, 2000);
+                //toastr.info('Saving...','', {timeOut: 500 });
                 console.log('Saved data model');
                 $scope.$apply();
             });
         };
+        /**********************
+          Watch methods
+         **********************/
         $window.addEventListener("offline", function() {
             onlineStateChanged(false);
         }, false);
@@ -98,6 +113,14 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
             console.log(areaName + ' data changed - reloading');
             init();
         });
+        $scope.$watch('model.globalEnabled', function(newValue, oldValue) {
+            if (newValue == oldValue) return;
+            if (newValue) {
+                toastr.info('Event monitoring is on. Pushes will be sent to subscribed devices during the specified schedules.');
+            } else {
+                toastr.warning('Event monitoring is currently off. While monitoring is off, no pushes will be sent to any devices.', 'Monitoring Disabled');
+            }
+        }, true);
         $scope.$watch('model', function(newValue, oldValue) {
             if (newValue == oldValue) {
                 console.log('model is the same');
@@ -113,6 +136,29 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
             saveModel();
         }, true);
         init();
+        openSettingsAsideIfNeeded();
+        /**********************
+          Scope methods 
+         **********************/
+        $scope.AllDisabled = function() {
+            return _.every($scope.model.subscriptions, function(sub) {
+                return !sub.enabled;
+            });
+        };
+        $scope.OpenConfig = function() {
+            $aside.open({
+                templateUrl: 'templates/config.html',
+                placement: 'right',
+                backdrop: true,
+                scope: $scope,
+                controller: function($scope, $modalInstance) {
+                    $scope.ok = function(e) {
+                        $modalInstance.close();
+                        e.stopPropagation();
+                    };
+                }
+            });
+        };
         $scope.RemoveDevice = function(sub, e) {
             if (e) {
                 e.preventDefault();
@@ -131,23 +177,23 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window',
             });
         };
         $scope.RevokeApiToken = function() {
-            if (!$scope.ApiKeySet()) {
+            if (!apiKeySet()) {
                 return;
             }
             resetData();
         };
         $scope.ApiKeySet = function() {
-            return $scope.config.pushBulletApiToken.length == 32;
+            return apiKeySet();
         };
         $scope.SetToken = function() {
-            if (!$scope.ApiKeySet()) return;
+            if (!apiKeySet()) return;
             loadApiKey();
             getDevices();
             saveConfig();
         };
         $scope.GetDeviceIcon = function(sub) {
             if (!sub) return 'question';
-            console.log('Device type', sub.device.type);
+            //console.log('Device type', sub.device.type);
             switch (sub.device.type) {
                 case 'chrome':
                 case 'firefox':
@@ -197,9 +243,12 @@ pushPresenceApp.directive('appSubscription', function() {
     return {
         restrict: 'E',
         scope: {
-            model: "=data"
+            model: "=data",
+            debug: '=',
+            online: '='
         },
         link: function($scope, $parent, element, attrs) {
+            $scope.parent = $parent;
             $scope.AddTimeframe = function() {
                 $scope.model.timeframes.push(new Timeframe());
             };
@@ -227,6 +276,19 @@ pushPresenceApp.directive('appSubscription', function() {
                     body: 'Test Notification'
                 });
                 console.log(res);
+            };
+            $scope.GetEventIcon = function(e) {
+                if (!e) return 'question';
+                switch (e.eventType) {
+                    case 'active':
+                        return 'user';
+                    case 'locked':
+                        return 'lock';
+                    case 'idle':
+                        return 'clock-o';
+                    default:
+                        return 'question';
+                }
             };
             // $scope.OnAllDayChanged = function(idx) {
             //   console.log('Timeframe changed');
@@ -312,6 +374,14 @@ pushPresenceApp.directive('focusMe', function($timeout) {
 });
 pushPresenceApp.filter('capitalize', function() {
     return capitalize;
+});
+pushPresenceApp.config(function(toastrConfig) {
+    angular.extend(toastrConfig, {
+        positionClass: 'toast-top-left',
+        timeOut: 5000,
+        extendedTimeOut: 2000,
+        maxOpened: 1
+    });
 });
 var capitalize = function(input, all) {
     //uses prototype method found in datamodel.js

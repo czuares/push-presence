@@ -6,8 +6,10 @@
   <!-- build:css styles/vendor.css -->
   <!-- bower:css -->
   <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
-  <link rel="stylesheet" href="bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css" />
   <link rel="stylesheet" href="bower_components/components-font-awesome/css/font-awesome.css" />
+  <link rel="stylesheet" href="bower_components/angular-aside/dist/css/angular-aside.css" />
+  <link rel="stylesheet" href="bower_components/angular-toastr/dist/angular-toastr.css" />
+  <link rel="stylesheet" href="bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css" />
   <!-- endbower -->
   <!-- endbuild -->
   <!-- build:css styles/main.css -->
@@ -16,107 +18,75 @@
   <!-- endbuild -->
 </head>
 <body ng-cloak ng-controller="OptionsCtrl">
+  <button class="btn btn-default pull-right" title="Settings" ng-click="OpenConfig()">
+    <i class="fa fa-gear fa-2x"></i>
+  </button>
+  <header>
+    <div class="page-header pb-green">
+      <h1>PushPresence
+        <small>PushBullet User Presence Extension</small>
+      </h1>
+    </div>
+  </header>
+  <div class="container">
   <div class="text-center">
-  <!-- TODO: change to snackbars -->
-    <div class="alert alert-danger" ng-if="!online">
-     Your computer is not connected to the internet right now. No pushes are going to be sent.
-   </div>
-   <div class="alert alert-warning" ng-if="!model.globalEnabled &amp;&amp; online">
-    Event monitoring is currently off. While monitoring is off, no pushes will be sent to any devices. Change the switch on the left to turn this back on.
+    <div class="alert alert-warning" ng-cloak ng-if="ApiKeySet() &amp;&amp; model.subscriptions.length == 0">
+      You have no devices associated with your PushBullet account. Please add some devices first and then 'Refresh Devices' in the settings.
+    </div>
+    <div class="alert alert-warning" ng-cloak ng-if="!ApiKeySet()">
+      To get started, please enter your PushBullet API token in the settings pane. Once you've done this, all of your devices will get populated.
+    </div>
+    <div class="alert alert-warning" ng-if="model.hideDisabled &amp;&amp; AllDisabled()">
+      All of your devices are disabled. Please show disabled devices in the settings to continue.
+    </div>
   </div>
-  <div class="alert alert-info" ng-if="model.globalEnabled &amp;&amp; online">
-    Event monitoring is on. Pushes will be sent to subscribed devices during the specified schedules.
-  </div>
-</div>
-<header>
-  <div class="page-header">
-    <h1>PushPresence
-      <small>PushBullet User Presence Extension</small>
-    </h1>
-  </div>
-</header>
-<div class="container">
-  <div class="row">
-    <div class="col-md-5 col-md-offset-7">
-      <accordion>
-        <accordion-group>
-        <accordion-heading>
-        Configuration <i class="pull-right fa fa-gear"></i>
-      </accordion-heading>
-      <div class="row">
-        <div class="col-md-12">
-          Click <a href="https://www.pushbullet.com/account" target="_blank">here</a> to get an access token
-        </div>
-        <div class="col-md-12" ng-class="{'has-error' : !(ApiKeySet()), 'has-success' : (ApiKeySet()) }">
-          <div class="input-group">
-            <input type="text" class="form-control" aria-label="API Token" placeholder="API Token" ng-change="SetToken()" ng-disabled="ApiKeySet()" ng-model="config.pushBulletApiToken" />
-            <span class="input-group-btn">
-              <button class="btn btn-danger" type="button" ng-click="RevokeApiToken()" ng-disabled="!(ApiKeySet())">Unregister</button>
-            </span>
+    <div class="row">
+      <div class="col-sm-6 col-md-4" ng-repeat="s in model.subscriptions | orderBy:['device.name']">
+        <div class="thumbnail device" ng-hide="!s.enabled &amp;&amp; model.hideDisabled" ng-class="{ 'active': s.selected, 'text-muted': !s.selected, 'text-primary': s.enabled &amp;&amp; !s.selected }" ng-click="SetActiveDevice(s)">
+          <button class="btn btn-xs btn-danger" ng-click="RemoveDevice(s, $event)">
+            <i class="fa fa-remove"></i>
+          </button>
+          <div class="text-center" ng-class="{'pb-green': s.selected &amp;&amp; s.enabled}">
+            <i class="fa fa-{{ GetDeviceIcon(s) }} fa-5x"></i>
+            <div class="caption">
+              <h3 ng-bind="GetDeviceName(s)"></h3>
+              <bs-switch ng-model="s.enabled" type="checkbox"></bs-switch>
+            </div>
           </div>
-          <div class="alert alert-danger" ng-if="!(ApiKeySet())">
-            API Token is required
-          </div>
-        </div>
-        <div class="col-md-12">
-          <button class="btn btn-default" ng-disabled="!online || !ApiKeySet()" ng-click="RefreshDevices()">Refresh Devices</button>
-        </div>
-        <div class="col-md-8">
-          <label>Event Monitoring:
-            <bs-switch ng-model="model.globalEnabled" type="checkbox"></bs-switch>
-          </label>
-        </div>
-      </div>
-    </accordion-group>
-  </accordion>
-</div>
-</div>
-<div class="row">
-  <div class="col-sm-6 col-md-4" ng-repeat="s in model.subscriptions | orderBy:['device.name']">
-    <div class="thumbnail device" ng-class="{ 'active': s.selected, 'text-muted': !s.selected, 'text-primary': s.enabled &amp;&amp; !s.selected }" ng-click="SetActiveDevice(s)">
-      <button class="btn btn-xs btn-danger" ng-click="RemoveDevice(s, $event)">
-        <i class="fa fa-remove"></i>
-      </button>
-      <div class="text-center" ng-class="{'pb-green': s.selected &amp;&amp; s.enabled}">
-        <i class="fa fa-{{ GetDeviceIcon(s) }} fa-5x"></i>
-        <div class="caption">
-          <h3 ng-bind="GetDeviceName(s)"></h3>
-          <bs-switch ng-model="s.enabled" type="checkbox"></bs-switch>
         </div>
       </div>
     </div>
+    <div ng-repeat="s in model.subscriptions" ng-hide="model.hideDisabled &amp;&amp; AllDisabled()">
+      <app-subscription ng-if="s.selected" debug="debug" online="online" data="s"></app-subscription>
+    </div>
   </div>
-</div>
-<div ng-repeat="s in model.subscriptions">
-  <app-subscription ng-if="s.selected" data="s"></app-subscription>
-</div>
-<span ng-bind="saveStatus"></span>
-</div>
-<footer>
-  <button class="btn btn-primary" ng-class="{active: debug}" ng-click="debug=!debug">
-    Debug
-  </button>
-  <div ng-if="debug" class="well">
-    {{ config | json }}
-    <hr> {{ model | json }}
-  </div>
-</footer>
-<!-- build:js scripts/vendor.js -->
-<!-- bower:js -->
-<script src="bower_components/jquery/dist/jquery.js"></script>
-<script src="bower_components/underscore/underscore.js"></script>
-<script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
-<script src="bower_components/angular/angular.js"></script>
-<script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
-<script src="bower_components/bootstrap-switch/dist/js/bootstrap-switch.js"></script>
-<script src="bower_components/angular-bootstrap-switch/dist/angular-bootstrap-switch.js"></script>
-<!-- endbower -->
-<!-- endbuild -->
-<!-- build:js scripts/options.js -->
-<script src="scripts/pushbullet.js"></script>
-<script src="scripts/datamodel.js"></script>
-<script src="scripts/angular/pushPresenceApp.js"></script>
-<script src="scripts/options.js"></script>
-<!-- endbuild -->
+  <footer>
+    <button class="btn btn-primary" ng-class="{active: debug}" ng-click="debug=!debug">
+      Debug
+    </button>
+    <div ng-if="debug" class="well">
+      {{ config | json }}
+      <hr> {{ model | json }}
+    </div>
+  </footer>
+  <!-- build:js scripts/vendor.js -->
+  <!-- bower:js -->
+  <script src="bower_components/jquery/dist/jquery.js"></script>
+  <script src="bower_components/underscore/underscore.js"></script>
+  <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+  <script src="bower_components/angular/angular.js"></script>
+  <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+  <script src="bower_components/angular-aside/dist/js/angular-aside.js"></script>
+  <script src="bower_components/angular-toastr/dist/angular-toastr.js"></script>
+  <script src="bower_components/bootstrap-switch/dist/js/bootstrap-switch.js"></script>
+  <script src="bower_components/angular-bootstrap-switch/dist/angular-bootstrap-switch.js"></script>
+  <!-- endbower -->
+  <!-- endbuild -->
+  <!-- build:js scripts/options.js -->
+  <script src="scripts/pushbullet.js"></script>
+  <script src="scripts/datamodel.js"></script>
+  <script src="scripts/angular/pushPresenceApp.js"></script>
+  <script src="scripts/options.js"></script>
+  <!-- endbuild -->
 </body>
 </html>

@@ -64,3 +64,10 @@ i.icon-sm {
     margin: auto;
     text-align: center;
 }
+div.config.aside{
+    width:500px;
+}
+
+h3.aside-title small {
+    color: white;
+}

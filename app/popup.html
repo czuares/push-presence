@@ -7,11 +7,10 @@
 
   <!-- build:css styles/vendor.css -->
   <!-- bower:css -->
-  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
   <link rel="stylesheet" href="bower_components/components-font-awesome/css/font-awesome.css" />
-  <link rel="stylesheet" href="bower_components/angular-aside/dist/css/angular-aside.css" />
-  <link rel="stylesheet" href="bower_components/angular-toastr/dist/angular-toastr.css" />
-  <link rel="stylesheet" href="bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css" />
+  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+  <link rel="stylesheet" href="bower_components/angular-motion/dist/angular-motion.css" />
+  <link rel="stylesheet" href="bower_components/bootstrap-additions/dist/bootstrap-additions.min.css" />
   <!-- endbower -->
   <!-- endbuild -->
   
@@ -34,7 +33,7 @@
   <div class="popup">
     <div>
       <label class="container clickable">Event Monitoring:
-        <bs-switch ng-model="model.globalEnabled" type="checkbox"></bs-switch>
+        <toggle-btn enabled="model.globalEnabled"/>
       </label>
     </div>
   </div>
@@ -43,13 +42,11 @@
   <!-- bower:js -->
   <script src="bower_components/jquery/dist/jquery.js"></script>
   <script src="bower_components/underscore/underscore.js"></script>
-  <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
   <script src="bower_components/angular/angular.js"></script>
-  <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
-  <script src="bower_components/angular-aside/dist/js/angular-aside.js"></script>
-  <script src="bower_components/angular-toastr/dist/angular-toastr.js"></script>
-  <script src="bower_components/bootstrap-switch/dist/js/bootstrap-switch.js"></script>
-  <script src="bower_components/angular-bootstrap-switch/dist/angular-bootstrap-switch.js"></script>
+  <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+  <script src="bower_components/angular-animate/angular-animate.js"></script>
+  <script src="bower_components/angular-strap/dist/angular-strap.js"></script>
+  <script src="bower_components/angular-strap/dist/angular-strap.tpl.js"></script>
   <!-- endbower -->
   <!-- endbuild -->
 

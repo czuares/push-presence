@@ -5,11 +5,10 @@
   <title>PushPresence</title>
   <!-- build:css styles/vendor.css -->
   <!-- bower:css -->
-  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
   <link rel="stylesheet" href="bower_components/components-font-awesome/css/font-awesome.css" />
-  <link rel="stylesheet" href="bower_components/angular-aside/dist/css/angular-aside.css" />
-  <link rel="stylesheet" href="bower_components/angular-toastr/dist/angular-toastr.css" />
-  <link rel="stylesheet" href="bower_components/bootstrap-switch/dist/css/bootstrap3/bootstrap-switch.css" />
+  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+  <link rel="stylesheet" href="bower_components/angular-motion/dist/angular-motion.css" />
+  <link rel="stylesheet" href="bower_components/bootstrap-additions/dist/bootstrap-additions.min.css" />
   <!-- endbower -->
   <!-- endbuild -->
   <!-- build:css styles/main.css -->
@@ -53,7 +52,7 @@
             <i class="fa fa-{{ GetDeviceIcon(s) }} fa-5x"></i>
             <div class="caption">
               <h3 ng-bind="GetDeviceName(s)"></h3>
-              <bs-switch ng-model="s.enabled" type="checkbox"></bs-switch>
+              <toggle-btn enabled="s.enabled"/>
             </div>
           </div>
         </div>
@@ -76,13 +75,11 @@
   <!-- bower:js -->
   <script src="bower_components/jquery/dist/jquery.js"></script>
   <script src="bower_components/underscore/underscore.js"></script>
-  <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
   <script src="bower_components/angular/angular.js"></script>
-  <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
-  <script src="bower_components/angular-aside/dist/js/angular-aside.js"></script>
-  <script src="bower_components/angular-toastr/dist/angular-toastr.js"></script>
-  <script src="bower_components/bootstrap-switch/dist/js/bootstrap-switch.js"></script>
-  <script src="bower_components/angular-bootstrap-switch/dist/angular-bootstrap-switch.js"></script>
+  <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+  <script src="bower_components/angular-animate/angular-animate.js"></script>
+  <script src="bower_components/angular-strap/dist/angular-strap.js"></script>
+  <script src="bower_components/angular-strap/dist/angular-strap.tpl.js"></script>
   <!-- endbower -->
   <!-- endbuild -->
   <!-- build:js scripts/options.js -->

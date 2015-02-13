@@ -216,7 +216,8 @@ var PushBullet = (function() {
 
             var handleResponse = function(ajax) {
               if(ajax.status !== httpResGood && ajax.status !== httpResNoCont) {
-                throw new Error(ajax.status + ": " + ajax.response);
+                console.log(ajax.status + ": " + ajax.response);
+                throw new Error(ajax.response);
               }
               try {
                 return JSON.parse(ajax.response);

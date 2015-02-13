@@ -51,7 +51,15 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window', '$timeout', '$as
             console.log('Populating devices');
             PushBullet.devices(function(err, res) {
                 if (err) {
-                    console.log(err);
+                    //console.log(err);
+                    resetData(false);
+                    var msg = JSON.parse(err.message);
+                    toastr.error(msg.error.message,'PushBullet API Error!', {
+                      positionClass: 'toast-top-center', 
+                      closeButon : true,
+                      timeOut: 0,
+                      extendedTimeout: 10000
+                    });
                     return;
                 }
                 var activeDevices = _.where(res.devices, {

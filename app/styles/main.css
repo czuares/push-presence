@@ -45,3 +45,22 @@ div.device .btn-danger {
 .event-type input.form-control {
     padding-right: 25px;
 }
+
+i.icon {
+    margin: 10px;
+    text-shadow: 2px 2px 1px #ccc;
+}
+
+i.icon-sm {
+    margin: 5px;
+}
+
+#toast-container.toast-top-center {
+    width: 100%;
+    top: 0;
+}
+#toast-container.toast-top-center > div {
+    width: 50%;
+    margin: auto;
+    text-align: center;
+}

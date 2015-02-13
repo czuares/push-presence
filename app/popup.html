@@ -22,22 +22,20 @@
 </head>
 
 <body ng-cloak ng-controller="PopupCtrl">
-  <div class="container popup">
-    <div class="row">
-      <div class="col-xs-10">
-        Enabled:
-        <bs-switch ng-model="model.globalEnabled" type="checkbox"></bs-switch>
-      </div>
-      <div class="col-xs-2">
-        <button type="button" class="btn btn-default" aria-label="Options" ng-click="OpenOptions()">
-          <span class="glyphicon glyphicon-cog" aria-hidden="true"></span>
-        </button>
-      </div>
+  <i class="fa fa-2x fa-fw fa-pied-piper pull-left pb-green icon icon-sm"></i>
+  <button type="button" class="btn btn-default pull-right" aria-label="Options" ng-click="OpenOptions()">
+    <span class="fa fa-gear fa-lg" aria-hidden="true"></span>
+  </button>
+  <header>
+    <div class="pb-green">
+      <h4>PushPresence</h4>
     </div>
+  </header>
+  <div class="popup">
     <div>
-      <ul ng-repeat="s in model.subscriptions">
-        <li ng-bind="s.device.name"></li>
-      </ul>
+      <label class="container clickable">Event Monitoring:
+        <bs-switch ng-model="model.globalEnabled" type="checkbox"></bs-switch>
+      </label>
     </div>
   </div>
 

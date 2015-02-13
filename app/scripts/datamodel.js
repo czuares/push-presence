@@ -30,14 +30,14 @@ function DataModel() {
   this.subscriptions = [];
 
   this.globalEnabled = true;
-  this.showDesktopNotifications = true;
+  this.showDesktopNotifications = false;
   this.hideDisabled = false;
   this.wakeUpDelay = 0; //TODO: implement
 }
 
 function Subscription(d) {
   this.device = new Device(d);
-  this.enabled = true;
+  this.enabled = false;
   this.selected = false;
   this.timeframes = [new Timeframe()];
 }

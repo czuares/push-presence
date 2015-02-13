@@ -8,12 +8,12 @@
 </div>
 <div class="modal-body">
   <div>
-    <h4>
-      Click <a href="https://www.pushbullet.com/account" target="_blank">here</a> to get an access token
+    <h4 ng-class="{'alert alert-info' : !(ApiKeySet())}">
+      <a href="https://www.pushbullet.com/account" target="_blank">Click here to get an access token</a>
     </h4>
-    <div class="form-group" ng-class="{'has-error' : !(ApiKeySet()), 'has-success' : (ApiKeySet()) }">
+    <div class="form-group" ng-class="{'has-error' : !(ApiKeySet()) }">
       <div class="input-group">
-        <input type="text" class="form-control" aria-label="API Token" placeholder="API Token" ng-change="SetToken()" ng-disabled="ApiKeySet()" ng-model="config.pushBulletApiToken" />
+      <input type="text" class="form-control" placeholder="Paste API Token to get started" ng-change="SetToken()" ng-disabled="ApiKeySet()" ng-model="config.pushBulletApiToken" />
         <span class="input-group-btn">
           <button class="btn btn-danger" type="button" ng-click="RevokeApiToken()" ng-disabled="!(ApiKeySet())">Unregister</button>
         </span>
@@ -28,18 +28,18 @@
   </div>
   <hr>
   <div>
-    <div class="form-group">
-      <label>
-        Hide Disabled Devices:
+    <label class="container clickable">
+      Hide Disabled Devices:
+      <span class="pull-right">
         <bs-switch ng-model="model.hideDisabled" type="checkbox"></bs-switch>
-      </label>
-    </div>
-    <div class="form-group">
-      <label>
-        Show Desktop Notifications:
+      </span>
+    </label>
+    <label class="container clickable">
+      Show Desktop Notifications:
+      <span class="pull-right">
         <bs-switch ng-model="model.showDesktopNotifications" type="checkbox"></bs-switch>
-      </label>
-    </div>
+      </span>
+    </label>
   </div>
 </div>
 <div class="modal-footer">

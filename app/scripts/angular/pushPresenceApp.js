@@ -77,10 +77,13 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window', '$timeout', '$as
                 $scope.model.subscriptions = _.union(validSubscriptions, newSubs);
                 console.log('$scope.model.subscriptions', $scope.model.subscriptions);
                 saveModel();
+                toastr.success('Devices loaded');
             });
         };
-        var resetData = function() {
-            if (!window.confirm("Warning!\n\nAll of your saved data will be erased. Are you sure you want to continue?")) return;
+        var resetData = function(prompt) {
+          if(prompt && !window.confirm("Warning!\n\nAll of your saved data will be erased. Are you sure you want to continue?")){
+              return;
+          }
             console.log('Resetting models');
             $scope.model = new DataModel();
             $scope.config = new ConfigurationModel();
@@ -180,7 +183,7 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window', '$timeout', '$as
             if (!apiKeySet()) {
                 return;
             }
-            resetData();
+            resetData(true);
         };
         $scope.ApiKeySet = function() {
             return apiKeySet();

@@ -4,7 +4,13 @@ var model = new DataModel();
 var config = new ConfigurationModel();
 var lastState = null;
 chrome.runtime.onInstalled.addListener(function(details) {
-    console.log('previousVersion', details.previousVersion);
+    if(details.reason == "install"){
+      console.log('first run');
+      var url = chrome.extension.getURL("options.html");
+      window.open(url);
+    }else{
+      console.log('Upgraded: previousVersion', details.previousVersion);
+    }
 });
 chrome.storage.onChanged.addListener(function(changes, areaName) {
     console.log(areaName + ' data changed - reloading');

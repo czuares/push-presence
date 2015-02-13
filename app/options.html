@@ -18,6 +18,9 @@
   <!-- endbuild -->
 </head>
 <body ng-cloak ng-controller="OptionsCtrl">
+<span ng-init="click=0">
+  <i class="fa fa-5x fa-fw pull-left pb-green icon" ng-class="{'fa-pied-piper': click>=0 &amp;&amp; click<5, 'fa-pied-piper-alt': click >= 5 &amp;&amp; click<10, 'fa-smile-o': click >= 10 }" ng-click="click=click+1"></i>
+  </span>
   <button class="btn btn-default pull-right" title="Settings" ng-click="OpenConfig()">
     <i class="fa fa-gear fa-2x"></i>
   </button>

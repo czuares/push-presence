@@ -367,7 +367,7 @@ pushPresenceApp.directive('tabTitle', function() {
         templateUrl: '../templates/tab_title.html'
     };
 });
-pushPresenceApp.directive('focusMe', function($timeout) {
+pushPresenceApp.directive('focusMe', ['$timeout', function($timeout) {
     return {
         scope: {
             trigger: '@focusMe'
@@ -382,18 +382,18 @@ pushPresenceApp.directive('focusMe', function($timeout) {
             });
         }
     };
-});
+}]);
 pushPresenceApp.filter('capitalize', function() {
     return capitalize;
 });
-pushPresenceApp.config(function(toastrConfig) {
+pushPresenceApp.config(['toastrConfig', function(toastrConfig) {
     angular.extend(toastrConfig, {
         positionClass: 'toast-top-left',
         timeOut: 5000,
         extendedTimeOut: 2000,
         maxOpened: 1
     });
-});
+}]);
 var capitalize = function(input, all) {
     //uses prototype method found in datamodel.js
     return ( !! input) ? input.capitalize() : '';

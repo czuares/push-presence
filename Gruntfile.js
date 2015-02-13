@@ -167,8 +167,8 @@ module.exports = function(grunt) {
         dest: '<%= config.dist %>'
       },
       html: [
-        '<%= config.app %>/options.html',
-        '<%= config.app %>/popup.html'
+        '<%= config.app %>/*.html',
+        '<%= config.app %>/templates/*.html'
       ]
     },
 
@@ -274,7 +274,9 @@ module.exports = function(grunt) {
             flatten: true,
             cwd: '<%= config.app %>',
             dest: '<%= config.dist %>/fonts',
-            src: ['bower_components/bootstrap/fonts/*.*']
+            src: ['bower_components/bootstrap/fonts/*.*',
+              'bower_components/components-font-awesome/fonts/*.*'
+            ]
           }
         ]
       },

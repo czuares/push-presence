@@ -7,3 +7,5 @@ app/bower_components
 test/bower_components
 app/scripts/angular/PushPresence.sublime-project
 app/scripts/angular/PushPresence.sublime-workspace
+*.sublime-project
+*.sublime-workspace

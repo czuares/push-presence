@@ -1,0 +1,12 @@
+<ul class="nav" ng-class="$navClass" role="tablist">
+  <li ng-repeat="$pane in $panes track by $index" ng-class="[ $index == $panes.$active ? $activeClass : '', $pane.disabled ? 'disabled' : '' ]">
+    <a role="tab" data-toggle="tab" ng-click="!$pane.disabled &amp;&amp; $setActive($index)" data-index="{{ $index }}">
+    	<tab-title data="$pane.name" index="{{$index+1}}" name="Schedule"></tab-title>
+        <button class="btn btn-xs btn-danger pull-right tab-close" ng-click="RemoveTimeFrame($index, $event)" ng-disabled="model.timeframes.length === 1" title="Remove Schedule">
+          <i class="fa fa-remove"></i>
+        </button>
+    </a>
+  </li>
+</ul>
+<div ng-transclude class="tab-content">
+</div>

@@ -56,8 +56,8 @@ function Day(dayIndex) {
 function Timeframe() {
   this.name = '';
   this.allDay = true;
-  this.begin = new Date().toISOString();
-  this.end = new Date().toISOString();
+  this.begin = new Date();
+  this.end = new Date();;
   this.invert = false;
 
   this.days = [];

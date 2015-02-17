@@ -18,6 +18,7 @@ if (Object.freeze) {
 
 function ConfigurationModel() {
   this.pushBulletApiToken = '';
+  this.initialized = false;
 }
 
 function Device(d) {

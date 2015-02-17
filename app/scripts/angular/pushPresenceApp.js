@@ -20,8 +20,11 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window', '$timeout', '$as
           show: true
         });
       };
+      var apiKeyEmpty = function(){
+        return $scope.config.pushBulletApiToken.length == 0;
+      }
       var apiKeySet = function() {
-        return $scope.config.pushBulletApiToken.length == 32;
+        return !apiKeyEmpty() && $scope.config.initialized;
       };
       var init = function() {
         chrome.storage.sync.get($scope.config, function(items) {
@@ -90,6 +93,8 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window', '$timeout', '$as
         console.log('$scope.model.subscriptions', $scope.model.subscriptions);
         saveModel();
         showAlert('Devices loaded', 'Success', 'success');
+        $scope.config.initialized = true;
+        saveConfig();
       });
 };
 var resetData = function(prompt) {
@@ -191,8 +196,12 @@ var resetData = function(prompt) {
       $scope.ApiKeySet = function() {
         return apiKeySet();
       };
+      $scope.ApiKeyEmpty = function() {
+        return apiKeyEmpty();
+      };
       $scope.SetToken = function() {
-        if (!apiKeySet()) return;
+        if (apiKeyEmpty()) return;
+
         loadApiKey();
         getDevices();
         saveConfig();

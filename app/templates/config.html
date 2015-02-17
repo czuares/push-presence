@@ -15,15 +15,16 @@
           <h4 ng-class="{'alert alert-info' : !(ApiKeySet())}">
             <a href="https://www.pushbullet.com/account" target="_blank">Click here to get an access token</a>
           </h4>
-          <div class="form-group" ng-class="{'has-error' : !(ApiKeySet()) }">
+          <div class="form-group" ng-class="{'has-error' : ApiKeyEmpty() }">
             <div class="input-group">
-              <input type="text" class="form-control" placeholder="Paste API Token to get started" ng-change="SetToken()" ng-disabled="ApiKeySet()" ng-model="config.pushBulletApiToken" />
+              <input type="text" focus-me="{{!ApiKeySet()}}" class="form-control" placeholder="Paste API Token to get started" ng-disabled="ApiKeySet()" ng-model="config.pushBulletApiToken" />
               <span class="input-group-btn">
-                <button class="btn btn-danger" type="button" ng-click="RevokeApiToken()" ng-disabled="!(ApiKeySet())">Unregister</button>
+              <button class="btn btn-success" type="button" ng-click="SetToken()" ng-if="!(ApiKeySet())">Register</button>
+                <button class="btn btn-danger" type="button" ng-click="RevokeApiToken()" ng-if="ApiKeySet()">Unregister</button>
               </span>
             </div>
             <div class="form-group">
-              <div class="bg-danger text-center text-danger padded img-rounded" ng-if="!(ApiKeySet())">API Token is required</div>
+              <div class="bg-danger text-center text-danger padded img-rounded" ng-if="ApiKeyEmpty()">API Token is required</div>
             </div>
           </div>
           <p class="help-block">

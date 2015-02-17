@@ -1,6 +1,6 @@
 'use strict';
 
-var app = angular.module('pushPresencePopup', []);
+var app = angular.module('pushPresencePopup', ['mgcrea.ngStrap', 'pushPresenceDirectives']);
 
 app.controller('PopupCtrl', ['$scope', '$window',
   function($scope, $window) {
@@ -47,6 +47,7 @@ app.controller('PopupCtrl', ['$scope', '$window',
       if (newValue === oldValue) {
         return;
       }
+      console.log('model changed');
       save();
     });
 

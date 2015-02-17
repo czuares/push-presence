@@ -52,7 +52,7 @@
             <i class="fa fa-{{ GetDeviceIcon(s) }} fa-5x"></i>
             <div class="caption">
               <h3 ng-bind="GetDeviceName(s)"></h3>
-              <toggle-btn enabled="s.enabled"/>
+              <span toggle-btn bind="s.enabled"></span>
             </div>
           </div>
         </div>
@@ -85,7 +85,8 @@
   <!-- build:js scripts/options.js -->
   <script src="scripts/pushbullet.js"></script>
   <script src="scripts/datamodel.js"></script>
-  <script src="scripts/angular/pushPresenceApp.js"></script>
+  <script src="scripts/angular/pushPresenceDirectives.js"></script>
+  <script src="scripts/angular/pushPresenceApp.js"></script>  
   <script src="scripts/options.js"></script>
   <!-- endbuild -->
 </body>

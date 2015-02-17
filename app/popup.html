@@ -33,7 +33,7 @@
   <div class="popup">
     <div>
       <label class="container clickable">Event Monitoring:
-        <toggle-btn enabled="model.globalEnabled"/>
+        <span toggle-btn bind="model.globalEnabled"></span>
       </label>
     </div>
   </div>
@@ -52,6 +52,7 @@
 
   <!-- build:js scripts/popup.js -->
   <script src="scripts/datamodel.js"></script>
+  <script src="scripts/angular/pushPresenceDirectives.js"></script>
   <script src="scripts/angular/pushPresencePopup.js"></script>
   <!-- endbuild -->
 </body>

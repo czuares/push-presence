@@ -1,5 +1,5 @@
 'use strict';
-var pushPresenceApp = angular.module('pushPresenceApp', ['ngAnimate', 'mgcrea.ngStrap']);
+var pushPresenceApp = angular.module('pushPresenceApp', ['ngAnimate', 'mgcrea.ngStrap','pushPresenceDirectives']);
 pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window', '$timeout', '$aside', '$modal', '$alert',
   function($scope, $window, $timeout, $aside, $modal, $alert) {
     $scope.debug = false;
@@ -232,7 +232,7 @@ var resetData = function(prompt) {
     };
   }
   ]);
-pushPresenceApp.directive('appSubscription', function() {
+pushPresenceApp.directive('appSubscription', [function() {
   return {
     restrict: 'E',
     scope: {
@@ -301,8 +301,8 @@ pushPresenceApp.directive('appSubscription', function() {
     },
     templateUrl: '../templates/subscription.html'
   };
-});
-pushPresenceApp.directive('tabTitle', function() {
+}]);
+pushPresenceApp.directive('tabTitle', [function() {
   return {
     restrict: 'E',
     scope: {
@@ -348,7 +348,7 @@ pushPresenceApp.directive('tabTitle', function() {
     },
     templateUrl: '../templates/tab_title.html'
   };
-});
+}]);
 pushPresenceApp.directive('focusMe', ['$timeout', function($timeout) {
   return {
     scope: {
@@ -365,19 +365,9 @@ pushPresenceApp.directive('focusMe', ['$timeout', function($timeout) {
     }
   };
 }]);
-pushPresenceApp.directive('toggleBtn', function() {
-  //TODO: make this a service
-  return {
-    restrict: 'E',
-    templateUrl: '../templates/toggle_btn.html',
-    scope: {
-      enabled: '='
-    }
-  };
-});
-pushPresenceApp.filter('capitalize', function() {
+pushPresenceApp.filter('capitalize', [function() {
   return capitalize;
-});
+}]);
 pushPresenceApp.config(['$alertProvider', '$asideProvider',
   function($alertProvider, $asideProvider) {
     angular.extend($alertProvider.defaults, {

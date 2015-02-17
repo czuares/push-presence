@@ -6,7 +6,7 @@
           Settings
           <label class="pull-right">
             <small>Event Monitoring:</small>
-            <toggle-btn enabled="model.globalEnabled" />
+            <span toggle-btn bind="model.globalEnabled"></span>
           </label>
         </h3>
       </div>
@@ -36,13 +36,13 @@
           <label class="container clickable">
             Hide Disabled Devices:
             <span class="pull-right">
-              <toggle-btn enabled="model.hideDisabled" />
+              <span toggle-btn bind="model.hideDisabled"></span>
             </span>
           </label>
           <label class="container clickable">
             Show Desktop Notifications:
             <span class="pull-right">
-              <toggle-btn enabled="model.showDesktopNotifications" />
+              <span toggle-btn bind="model.showDesktopNotifications"></span>
             </span>
           </label>
         </div>

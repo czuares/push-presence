@@ -39,7 +39,9 @@
       To get started, please enter your PushBullet API token in the settings pane. Once you've done this, all of your devices will get populated.
     </div>
     <div class="alert alert-warning" ng-if="model.hideDisabled &amp;&amp; AllDisabled()">
-      All of your devices are disabled. Please show disabled devices in the settings to continue.
+    All of your devices are disabled. Please <br>
+    <button class="btn btn-primary" ng-click="model.hideDisabled = false">Show Disabled Devices</button> 
+    <br>to continue.
     </div>
   </div>
     <div class="row">

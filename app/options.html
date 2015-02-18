@@ -1,59 +1,59 @@
 <!doctype html>
 <html ng-app="pushPresenceApp" ng-csp>
-<head>
-  <meta charset="utf-8">
-  <title>PushPresence</title>
-  <!-- build:css styles/vendor.css -->
-  <!-- bower:css -->
-  <link rel="stylesheet" href="bower_components/components-font-awesome/css/font-awesome.css" />
-  <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
-  <link rel="stylesheet" href="bower_components/angular-motion/dist/angular-motion.css" />
-  <link rel="stylesheet" href="bower_components/bootstrap-additions/dist/bootstrap-additions.min.css" />
-  <!-- endbower -->
-  <!-- endbuild -->
-  <!-- build:css styles/main.css -->
-  <link rel="stylesheet" href="styles/main.css">
-  <link rel="stylesheet" href="styles/angular.css">
-  <!-- endbuild -->
-</head>
-<body ng-cloak ng-controller="OptionsCtrl">
-<span ng-init="click=0">
-  <i class="fa fa-5x fa-fw pull-left pb-green icon" ng-class="{'fa-pied-piper': click>=0 &amp;&amp; click<5, 'fa-pied-piper-alt': click >= 5 &amp;&amp; click<10, 'fa-smile-o': click >= 10 }" ng-click="click=click+1"></i>
-  </span>
-  <button class="btn btn-default pull-right" title="Settings" ng-click="OpenConfig()">
+  <head>
+    <meta charset="utf-8">
+    <title>PushPresence</title>
+    <!-- build:css styles/vendor.css -->
+    <!-- bower:css -->
+    <link rel="stylesheet" href="bower_components/components-font-awesome/css/font-awesome.css" />
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="bower_components/angular-motion/dist/angular-motion.css" />
+    <link rel="stylesheet" href="bower_components/bootstrap-additions/dist/bootstrap-additions.min.css" />
+    <!-- endbower -->
+    <!-- endbuild -->
+    <!-- build:css styles/main.css -->
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/angular.css">
+    <!-- endbuild -->
+  </head>
+  <body ng-cloak ng-controller="OptionsCtrl">
+    <span ng-init="click=0">
+      <i class="fa fa-5x fa-fw pull-left pb-green icon" ng-class="{'fa-pied-piper': click>=0 &amp;&amp; click<5, 'fa-pied-piper-alt': click >= 5 &amp;&amp; click<10, 'fa-smile-o': click >= 10 }" ng-click="click=click+1"></i>
+    </span>
+    <button class="btn btn-default pull-right" title="Settings" ng-click="OpenConfig()">
     <i class="fa fa-gear fa-2x"></i>
-  </button>
-  <header>
-    <div class="page-header pb-green">
-      <h1>PushPresence
+    </button>
+    <header>
+      <div class="page-header pb-green">
+        <h1>PushPresence
         <small>PushBullet User Presence Extension</small>
-      </h1>
-    </div>
-  </header>
-  <div class="container">
-  <div class="text-center">
-    <div class="alert alert-warning" ng-cloak ng-if="ApiKeySet() &amp;&amp; model.subscriptions.length == 0">
-      You have no devices associated with your PushBullet account. Please add some devices first and then 'Refresh Devices' in the settings.
-    </div>
-    <div class="alert alert-warning" ng-cloak ng-if="!ApiKeySet()">
-      To get started, please enter your PushBullet API token in the settings pane and click Register. Once you've done this, all of your devices will get populated.
-    </div>
-    <div class="alert alert-warning" ng-if="model.hideDisabled &amp;&amp; AllDisabled()">
-    All of your devices are disabled. Please <br>
-    <button class="btn btn-primary" ng-click="model.hideDisabled = false">Show Disabled Devices</button> 
-    <br>to continue.
-    </div>
-  </div>
-    <div class="row">
-      <div class="col-sm-6 col-md-4" ng-repeat="s in model.subscriptions | orderBy:['device.name']">
-        <div class="thumbnail device" ng-hide="!s.enabled &amp;&amp; model.hideDisabled" ng-class="{ 'active': s.selected, 'text-muted': !s.selected, 'text-primary': s.enabled &amp;&amp; !s.selected }" ng-click="SetActiveDevice(s)">
-          <button class="btn btn-xs btn-danger" ng-click="RemoveDevice(s, $event)">
+        </h1>
+      </div>
+    </header>
+    <div class="container">
+      <div class="text-center">
+        <div class="alert alert-warning" ng-cloak ng-if="ApiKeySet() &amp;&amp; model.subscriptions.length == 0">
+          You have no devices associated with your PushBullet account. Please add some devices first and then 'Refresh Devices' in the settings.
+        </div>
+        <div class="alert alert-warning" ng-cloak ng-if="!ApiKeySet()">
+          To get started, please enter your PushBullet API token in the settings pane and click Register. Once you've done this, all of your devices will get populated.
+        </div>
+        <div class="alert alert-warning" ng-if="model.hideDisabled &amp;&amp; AllDisabled()">
+          All of your devices are disabled. Please <br>
+          <button class="btn btn-primary" ng-click="model.hideDisabled = false">Show Disabled Devices</button>
+          <br>to continue.
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-sm-6 col-md-4" ng-repeat="s in model.subscriptions | orderBy:['device.name']">
+          <div class="thumbnail device" ng-hide="!s.enabled &amp;&amp; model.hideDisabled" ng-class="{ 'active': s.selected, 'text-muted': !s.selected, 'text-primary': s.enabled &amp;&amp; !s.selected }" ng-click="SetActiveDevice(s)">
+            <button class="btn btn-xs btn-danger" ng-click="RemoveDevice(s, $event)">
             <i class="fa fa-remove"></i>
-          </button>
-          <div class="text-center" ng-class="{'pb-green': s.selected &amp;&amp; s.enabled}">
-            <i class="fa fa-{{ GetDeviceIcon(s) }} fa-5x"></i>
-            <div class="caption">
-              <h3 ng-bind="GetDeviceName(s)"></h3>
+            </button>
+            <div class="text-center" ng-class="{'pb-green': s.selected &amp;&amp; s.enabled}">
+              <i class="fa fa-{{ GetDeviceIcon(s) }} fa-5x"></i>
+              <div class="caption">
+                <h3 ng-bind="GetDeviceName(s)"></h3>
               <span toggle-btn bind="s.enabled"></span>
             </div>
           </div>
@@ -66,7 +66,7 @@
   </div>
   <footer>
     <button class="btn btn-primary" ng-class="{active: debug}" ng-click="debug=!debug">
-      Debug
+    Debug
     </button>
     <div ng-if="debug" class="well">
       {{ config | json }}
@@ -88,7 +88,7 @@
   <script src="scripts/pushbullet.js"></script>
   <script src="scripts/datamodel.js"></script>
   <script src="scripts/angular/pushPresenceDirectives.js"></script>
-  <script src="scripts/angular/pushPresenceApp.js"></script>  
+  <script src="scripts/angular/pushPresenceApp.js"></script>
   <script src="scripts/options.js"></script>
   <!-- endbuild -->
 </body>

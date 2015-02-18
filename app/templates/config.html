@@ -3,54 +3,59 @@
     <div class="aside-content">
       <div class="aside-header">
         <h3 class="aside-title">
-          Settings
-          <label class="pull-right">
-            <small>Event Monitoring:</small>
-            <span toggle-btn bind="model.globalEnabled"></span>
-          </label>
-        </h3>
-      </div>
-      <div class="aside-body">
-        <div>
-          <h4 ng-class="{'alert alert-info' : !(ApiKeySet())}">
-            <a href="https://www.pushbullet.com/account" target="_blank">Click here to get an access token</a>
-          </h4>
-          <div class="form-group" ng-class="{'has-error' : ApiKeyEmpty() }">
-            <div class="input-group">
-              <input type="text" focus-me="{{!ApiKeySet()}}" class="form-control" placeholder="Paste API Token to get started" ng-disabled="ApiKeySet()" ng-model="config.pushBulletApiToken" />
-              <span class="input-group-btn">
-              <button class="btn btn-success" type="button" ng-click="SetToken()" ng-if="!(ApiKeySet())">Register</button>
-                <button class="btn btn-danger" type="button" ng-click="RevokeApiToken()" ng-if="ApiKeySet()">Unregister</button>
-              </span>
-            </div>
-            <div class="form-group">
-              <div class="bg-danger text-center text-danger padded img-rounded" ng-if="ApiKeyEmpty()">API Token is required</div>
-            </div>
-          </div>
-          <p class="help-block">
-            <button class="btn btn-default" ng-disabled="!online || !ApiKeySet()" ng-click="RefreshDevices()">Refresh Devices</button>
-            Click to load new or remove stale devices
-          </p>
-        </div>
-        <hr>
-        <div>
-          <label class="container clickable">
-            Hide Disabled Devices:
-            <span class="pull-right">
-              <span toggle-btn bind="model.hideDisabled"></span>
-            </span>
-          </label>
-          <label class="container clickable">
-            Show Desktop Notifications:
-            <span class="pull-right">
-              <span toggle-btn bind="model.showDesktopNotifications"></span>
-            </span>
-          </label>
-        </div>
-      </div>
-      <div class="aside-footer">
-        <button type="button" class="btn btn-default" ng-click="$hide()">Close</button>
-      </div>
+        Settings
+        <label class="pull-right">
+          <small>Event Monitoring:</small>
+        <span toggle-btn bind="model.globalEnabled"></span>
+      </label>
+      </h3>
     </div>
+    <div class="aside-body">
+      <div>
+        <div class="text-center">
+          <div class="container alert alert-danger" ng-if="!online">
+            You are currently offline. Some of these options will not be available until you have an internet connection.
+          </div>
+          <h4 ng-class="{'alert alert-info' : !(ApiKeySet())}">
+          <a href="https://www.pushbullet.com/account" target="_blank">Click here to get an access token</a>
+          </h4>
+        </div>
+        <div class="form-group" ng-class="{'has-error' : ApiKeyEmpty()}">
+          <div class="input-group">
+            <input type="text" focus-me="{{ApiKeyEmpty()}}" ng-keyup="ApiKeyUp($event)" class="form-control" placeholder="Paste API Token to get started" ng-disabled="ApiKeySet()" ng-model="config.pushBulletApiToken" />
+            <span class="input-group-btn">
+              <button class="btn btn-success" type="button" ng-click="SetToken()" ng-show="!(ApiKeySet())" ng-disabled="ApiKeyEmpty() || !online">Register</button>
+              <button class="btn btn-danger" type="button" ng-click="RevokeApiToken()" ng-show="ApiKeySet()">Unregister</button>
+            </span>
+          </div>
+          <div class="form-group">
+            <div class="bg-danger text-center text-danger padded img-rounded" ng-if="ApiKeyEmpty()">API Token is required</div>
+          </div>
+        </div>
+        <p class="help-block">
+        <button class="btn btn-default" ng-disabled="!online || !ApiKeySet()" ng-click="RefreshDevices()">Refresh Devices</button>
+        Click to load new or remove stale devices
+        </p>
+      </div>
+      <hr>
+      <div>
+        <label class="container clickable">
+          Hide Disabled Devices:
+          <span class="pull-right">
+          <span toggle-btn bind="model.hideDisabled"></span>
+        </span>
+      </label>
+      <label class="container clickable">
+        Show Desktop Notifications:
+        <span class="pull-right">
+        <span toggle-btn bind="model.showDesktopNotifications"></span>
+      </span>
+    </label>
   </div>
+</div>
+<div class="aside-footer">
+  <button type="button" class="btn btn-default" ng-click="$hide()">Close</button>
+</div>
+</div>
+</div>
 </div>

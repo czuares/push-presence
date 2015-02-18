@@ -15,61 +15,61 @@
       <div ng-repeat="t in model.timeframes" bs-pane>
         <!-- {{t | json }} -->
         <p>
-          <div class="col-md-4">
-            <div ng-repeat="e in t.events" ng-init="title=(e.eventType | capitalize)" class="form-group">
-              <div class="input-group event-type">
-                <span class="input-group-addon">
-                  <input type="checkbox" aria-label="{{title}}" ng-model="e.subscribed">
-                </span>
-                <input type="text" class="form-control" aria-label="Message" ng-disabled="!e.subscribed" placeholder="{{title}}" ng-model="e.customMessage" />
-                <span class="inset-icon fa fa-{{GetEventIcon(e)}} form-control-feedback" aria-hidden="true"></span>
-              </div>
-            </div>
-            <p class="help-block">
-              Check the box next to the event you would like to receive pushes for. Optionally customize the message in each of the text boxes.
-            </p>
-          </div>
-          <div class="col-md-8">
-            <div class="row">
-              <div class="col-md-3">
-                <label class="checkbox">
-                  <input type="checkbox" ng-model="t.allDay" />{{ GetScheduleName(t) }}
-                </label>
-              </div>
-              <div class="col-md-9">
-                <p class="help-block" ng-if="t.allDay">
-                  Receive push notifications every day at all times of day (uncheck for more granular control).
-                </p>
-              </div>
-            </div>
-            <div ng-if="!t.allDay">
-              <div class="row">
-                <div class="col-md-11 col-md-offset-1">
-                <div class="btn-group form-group" bs-checkbox-group>
-                    <label  ng-repeat="d in t.days" class="btn btn-default" ng-model="d.enabled" bs-checkbox>{{DayName(d) | capitalize}}</label>
-                  </div>
-                </div>
-              </div>
-              <form name="time" class="form-inline" role="form">
-                <div class="row">
-                  <div class="col-md-6">
-                   <div class="form-group" ng-class="{'has-error': time.begin.$invalid}">
-                    <label class="control-label"><i class="fa fa-clock-o"></i> From:
-                      <input type="text" class="form-control" size="8" ng-model="t.begin" name="begin" data-time-type="number" bs-timepicker>
-                    </label>
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-group" ng-class="{'has-error': time.end.$invalid}">
-                    <label class="control-label"><i class="fa fa-clock-o"></i> To: 
-                      <input type="text" class="form-control" size="8" ng-model="t.end" name="end" data-time-type="number" bs-timepicker>
-                    </label>
-                  </div>
-                </div>
-              </div>
-            </form>
+        <div class="col-md-4">
+          <div ng-repeat="e in t.events" ng-init="title=(e.eventType | capitalize)" class="form-group">
+            <div class="input-group event-type">
+              <span class="input-group-addon">
+                <input type="checkbox" aria-label="{{title}}" ng-model="e.subscribed">
+              </span>
+              <input type="text" class="form-control" aria-label="Message" ng-disabled="!e.subscribed" placeholder="{{title}}" ng-model="e.customMessage" />
+            <span class="inset-icon fa fa-{{GetEventIcon(e)}} form-control-feedback" aria-hidden="true"></span>
           </div>
         </div>
+        <p class="help-block">
+        Check the box next to the event you would like to receive pushes for. Optionally customize the message in each of the text boxes.
+        </p>
+      </div>
+      <div class="col-md-8">
+        <div class="row">
+          <div class="col-md-3">
+            <label class="checkbox">
+              <input type="checkbox" ng-model="t.allDay" />{{ GetScheduleName(t) }}
+            </label>
+          </div>
+          <div class="col-md-9">
+            <p class="help-block" ng-if="t.allDay">
+            Receive push notifications every day at all times of day (uncheck for more granular control).
+            </p>
+          </div>
+        </div>
+        <div ng-if="!t.allDay">
+          <div class="row">
+            <div class="col-md-11 col-md-offset-1">
+              <div class="btn-group form-group" bs-checkbox-group>
+                <label  ng-repeat="d in t.days" class="btn btn-default" ng-model="d.enabled" bs-checkbox>{{DayName(d) | capitalize}}</label>
+              </div>
+            </div>
+          </div>
+          <form name="time" class="form-inline" role="form">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="form-group" ng-class="{'has-error': time.begin.$invalid}">
+                  <label class="control-label"><i class="fa fa-clock-o"></i> From:
+                    <input type="text" class="form-control" size="8" ng-model="t.begin" name="begin" data-time-type="number" bs-timepicker>
+                  </label>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-group" ng-class="{'has-error': time.end.$invalid}">
+                  <label class="control-label"><i class="fa fa-clock-o"></i> To:
+                    <input type="text" class="form-control" size="8" ng-model="t.end" name="end" data-time-type="number" bs-timepicker>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
       </p>
     </div>
   </div>
@@ -82,5 +82,5 @@
 </div>
 </div>
 <div ng-if="!model.enabled" class="bg-warning text-warning padded img-rounded">
-  Device is disabled. You will not receive any pushes on this device.
+Device is disabled. You will not receive any pushes on this device.
 </div>

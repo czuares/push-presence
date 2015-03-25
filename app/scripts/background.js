@@ -72,7 +72,7 @@ var handleEvent = function(sub, evt, showDesktopNotifications) {
     var opt = {
         type: 'basic',
         title: state + msgTitle,
-        message: evt.eventType.capitalize(),
+        message: capitalize(evt.eventType),
         priority: 1,
         iconUrl: '../images/icon-128.png'
     };
@@ -92,7 +92,7 @@ var handleEvent = function(sub, evt, showDesktopNotifications) {
             body: ( !! evt.customMessage) ? evt.customMessage : opt.message
         }, function(err, res) {
             if (err) {
-                console.log('Push ERROR', err);
+                console.error('Push ERROR', err);
             } else {
                 console.log('Push response', res);
             }
@@ -111,7 +111,6 @@ var isWithinRange = function(timeframe) {
     var dayId = new Date().getDay();
     var isTodayEnabled = timeframe.days.some(function(d) {
         var enabled = (d.id == dayId && d.enabled);
-        //console.log('enabled ' + d.id + ': ' + enabled);
         return enabled;
     });
     if (!isTodayEnabled) {

@@ -152,13 +152,6 @@ module.exports = function(grunt) {
       }
     },
 
-    // Remove logging from all .js files
-    removelogging: {
-      dist: {
-        src: '<%= config.dist %>/**/*.js'
-      }
-    },
-
     // Reads HTML for usemin blocks to enable smart builds that automatically
     // concat, minify and revision files. Creates configurations in memory so
     // additional tasks can operate on them
@@ -239,15 +232,24 @@ module.exports = function(grunt) {
         }
       }
     },
-    // uglify: {
-    //   dist: {
-    //     files: {
-    //       '<%= config.dist %>/scripts/scripts.js': [
-    //         '<%= config.dist %>/scripts/scripts.js'
-    //       ]
-    //     }
-    //   }
-    // },
+    uglify: {
+      options: {
+        compress: {
+          global_defs: {
+            "DEBUG": false
+          },
+          dead_code: true,
+          drop_console: true
+        }
+      }
+      // dist: {
+      //   // files: {
+      //   //   '<%= config.dist %>/scripts/scripts.js': [
+      //   //     '<%= config.dist %>/scripts/scripts.js'
+      //   //   ]
+      //   // }
+      // }
+    },
     // concat: {
     //   dist: {}
     // },
@@ -307,6 +309,24 @@ module.exports = function(grunt) {
       ],
     },
 
+    // Compress files in dist to make Chromea Apps package
+    compress: {
+      dist: {
+        options: {
+          archive: function() {
+            var manifest = grunt.file.readJSON('app/manifest.json');
+            return 'package/PushPresence-' + manifest.version + '.zip';
+          }
+        },
+        files: [{
+          expand: true,
+          cwd: 'dist/',
+          src: ['**'],
+          dest: ''
+        }]
+      }
+    },
+
     // Merge event page, update build number, exclude the debug script
     chromeManifest: {
       dist: {
@@ -324,21 +344,45 @@ module.exports = function(grunt) {
       }
     },
 
-    // Compress files in dist to make Chromea Apps package
-    compress: {
-      dist: {
+    strip : {
+      dist : {
+        src : '<%= config.dist %>/**/*.js',
+        options : {
+          inline : true
+        }
+      }
+    },
+
+    //environment variables
+    ngconstant: {
+      // Options for all targets
+      options: {
+        space: '  ',
+        wrap: '"use strict";\n\n {%= __ngModule %}',
+        name: 'config',
+      },
+      // Environment targets
+      development: {
         options: {
-          archive: function() {
-            var manifest = grunt.file.readJSON('app/manifest.json');
-            return 'package/PushPresence-' + manifest.version + '.zip';
-          }
+          dest: '<%= config.app %>/scripts/config.js'
         },
-        files: [{
-          expand: true,
-          cwd: 'dist/',
-          src: ['**'],
-          dest: ''
-        }]
+        constants: {
+          ENV: {
+            name: 'development',
+            debugEnabled: true
+          }
+        }
+      },
+      production: {
+        options: {
+          dest: '<%= config.dist %>/scripts/config.js'
+        },
+        constants: {
+          ENV: {
+            name: 'production',
+            debugEnabled: false
+          }
+        }
       }
     }
   });
@@ -380,15 +424,17 @@ module.exports = function(grunt) {
     'cssmin',
     'uglify',
     'copy',
-    //'removelogging',
+    'ngconstant:production',
     'usemin',
     'htmlmin',
+    'strip:dist',
     'compress'
   ]);
 
   grunt.registerTask('default', [
-    'newer:jshint',
-    'test',
-    'build'
+    'ngconstant:development',
+    //'newer:jshint',
+    //'test',
+    //'build'
   ]);
 };

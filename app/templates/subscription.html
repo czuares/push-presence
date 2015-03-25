@@ -1,5 +1,4 @@
 <div class="panel panel-default" ng-if="model.enabled">
-  <div ng-if="debug" ng-bind="model | json"></div>
   <div class="panel-heading">
     <div class="row">
       <div class="col-md-4">
@@ -13,7 +12,6 @@
   <div class="panel-body timeframes">
     <div bs-tabs data-template="../templates/tabs.html">
       <div ng-repeat="t in model.timeframes" bs-pane>
-        <!-- {{t | json }} -->
         <p>
         <div class="col-md-4">
           <div ng-repeat="e in t.events" ng-init="title=(e.eventType | capitalize)" class="form-group">

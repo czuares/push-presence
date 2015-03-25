@@ -1,8 +1,7 @@
 'use strict';
-var pushPresenceApp = angular.module('pushPresenceApp', ['ngAnimate', 'mgcrea.ngStrap', 'pushPresenceDirectives']);
-pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window', '$timeout', '$aside', '$modal', '$alert',
-    function($scope, $window, $timeout, $aside, $modal, $alert) {
-        $scope.debug = false;
+var pushPresenceApp = angular.module('pushPresenceApp', ['config', 'ngAnimate', 'mgcrea.ngStrap', 'pushPresenceDirectives']);
+pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window', '$timeout', '$aside', '$modal', '$alert', 'ENV',
+    function($scope, $window, $timeout, $aside, $modal, $alert, ENV) {
         $scope.online = navigator.onLine;
         $scope.DaysOfWeek = $window.DaysOfWeek;
         var initModel = new DataModel();
@@ -72,7 +71,7 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window', '$timeout', '$as
             PushBullet.devices(function(err, res) {
                 try {
                     if (err) {
-                        //console.log(err);
+                        console.log(err);
                         resetData(false);
                         var msg = JSON.parse(err.message);
                         showAlert(msg.error.message, 'PushBullet API Error!', 'danger');
@@ -227,7 +226,6 @@ pushPresenceApp.controller('OptionsCtrl', ['$scope', '$window', '$timeout', '$as
         };
         $scope.GetDeviceIcon = function(sub) {
             if (!sub) return 'question';
-            //console.log('Device type', sub.device.type);
             switch (sub.device.type) {
                 case 'chrome':
                 case 'firefox':
@@ -314,7 +312,6 @@ pushPresenceApp.directive('appSubscription', [
                     }
                 };
                 // $scope.OnAllDayChanged = function(idx) {
-                //   console.log('Timeframe changed');
                 //   var timeframe = $scope.model.timeframes[idx];
                 //   if (timeframe.allDay) {
                 //     $scope.model.timeframes[idx] = new Timeframe();
@@ -343,7 +340,7 @@ pushPresenceApp.directive('tabTitle', [
                 index: "@",
                 name: "@"
             },
-            link: function($scope, $parent, element, attrs) {
+            link: function($scope, element, attrs) {
                 var init = function() {
                     $scope.editable = false;
                     $scope.showEdit = false;
@@ -368,12 +365,10 @@ pushPresenceApp.directive('tabTitle', [
                     }
                 };
                 $scope.CancelEdit = function() {
-                    console.log('canceling edit');
                     setName();
                     $scope.SetEditable(false);
                 };
                 $scope.Save = function() {
-                    console.log('save');
                     $scope.model = $scope.tempName;
                     $scope.SetEditable(false);
                 };
@@ -402,9 +397,11 @@ pushPresenceApp.directive('focusMe', ['$timeout',
     }
 ]);
 pushPresenceApp.filter('capitalize', [
-
     function() {
-        return capitalize;
+        return function(input, all) {
+            //uses method found in datamodel.js
+            return ( !! input) ? capitalize(input) : '';
+        };
     }
 ]);
 pushPresenceApp.config(['$alertProvider', '$asideProvider',
@@ -421,7 +418,3 @@ pushPresenceApp.config(['$alertProvider', '$asideProvider',
         });
     }
 ]);
-var capitalize = function(input, all) {
-    //uses prototype method found in datamodel.js
-    return ( !! input) ? input.capitalize() : '';
-};

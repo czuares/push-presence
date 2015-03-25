@@ -61,10 +61,12 @@
       </div>
     </div>
     <div ng-repeat="s in model.subscriptions" ng-hide="model.hideDisabled &amp;&amp; AllDisabled()">
-      <app-subscription ng-if="s.selected" debug="debug" online="online" data="s"></app-subscription>
+      <app-subscription ng-if="s.selected" online="online" data="s"></app-subscription>
     </div>
   </div>
   <footer>
+  <!-- build:dev-only -->
+  <!-- do not include in release builds -->
     <button class="btn btn-primary" ng-class="{active: debug}" ng-click="debug=!debug">
     Debug
     </button>
@@ -72,6 +74,7 @@
       {{ config | json }}
       <hr> {{ model | json }}
     </div>
+    <!-- endbuild -->
   </footer>
   <!-- build:js scripts/vendor.js -->
   <!-- bower:js -->
@@ -84,12 +87,17 @@
   <script src="bower_components/angular-strap/dist/angular-strap.tpl.js"></script>
   <!-- endbower -->
   <!-- endbuild -->
-  <!-- build:js scripts/options.js -->
-  <script src="scripts/pushbullet.js"></script>
+
+  <!-- build:js scripts/config.js -->
+  <script src="scripts/config.js"></script>
+  <!-- endbuild -->
+
+  <!-- build:js scripts/app.js -->
   <script src="scripts/datamodel.js"></script>
+  <script src="scripts/pushbullet.js"></script>
   <script src="scripts/angular/pushPresenceDirectives.js"></script>
   <script src="scripts/angular/pushPresenceApp.js"></script>
-  <script src="scripts/options.js"></script>
   <!-- endbuild -->
+
 </body>
 </html>

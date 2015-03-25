@@ -66,6 +66,6 @@ function Timeframe() {
         this.events.push(new Event(EventTypes[e]));
     }
 }
-String.prototype.capitalize = function() {
-    return this.charAt(0).toUpperCase() + this.slice(1);
+function capitalize (value) {
+    return value.charAt(0).toUpperCase() + value.slice(1);
 };

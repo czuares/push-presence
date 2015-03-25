@@ -1,7 +1,7 @@
 'use strict';
-var app = angular.module('pushPresencePopup', ['mgcrea.ngStrap', 'pushPresenceDirectives']);
-app.controller('PopupCtrl', ['$scope', '$window',
-    function($scope, $window) {
+var app = angular.module('pushPresencePopup', ['config','mgcrea.ngStrap', 'pushPresenceDirectives']);
+app.controller('PopupCtrl', ['$scope', '$window','ENV',
+    function($scope, $window, ENV) {
         $scope.model = new DataModel();
         $scope.config = new ConfigurationModel();
         var init = function() {

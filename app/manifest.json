@@ -16,10 +16,9 @@
     "offline_enabled": false,
     "background": {
         "scripts": [
-            "scripts/datamodel.js",
             "scripts/pushbullet.js",
-            "scripts/background.js",
-            "scripts/chromereload.js"
+            "scripts/datamodel.js",
+            "scripts/background.js"
         ]
     },
     "options_page": "options.html",
